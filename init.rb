@@ -1,5 +1,9 @@
 require 'redmine'
 
+Rails.configuration.to_prepare do
+  RedmineGttPrint.setup
+end
+
 Redmine::Plugin.register :redmine_gtt_print do
   name 'Redmine GTT Print Plugin'
   author 'Georepublic'
@@ -8,5 +12,8 @@ Redmine::Plugin.register :redmine_gtt_print do
   version '0.1.0'
 
   requires_redmine version_or_higher: '3.4.0'
-end
 
+  settings( :default => { 'default_print_server' => "http://localhost:8080/mfp"},
+    :partial => 'gtt_print/settings')
+
+end
