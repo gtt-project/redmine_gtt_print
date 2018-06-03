@@ -16,4 +16,10 @@ Redmine::Plugin.register :redmine_gtt_print do
   settings( :default => { 'default_print_server' => "http://localhost:8080/mfp"},
     :partial => 'gtt_print/settings')
 
+  project_module :gtt_print do
+
+    permission :view_gtt_print, {}, require: :member, read: true
+
+  end
+
 end

@@ -6,7 +6,7 @@ module RedmineGttPrint
         <%= javascript_include_tag 'gtt_print', plugin: 'redmine_gtt_print' %>
     END
 
-    render_on :view_issues_history_journal_bottom,
+    render_on :view_issues_sidebar_issues_bottom,
       partial: "hooks/print_issue_form"
 
   end
