@@ -10,8 +10,14 @@ $(function() {
     });
   }
 
-  $(document).on('click', '.print_box input[type=button]', function(e){
-    console.log('TODO: submit print');
+  $(document).on('click', '.print_box input[type=button]', function (e) {
+
+    var config = $('form.print_box select').val();
+
+    $.getJSON(server + "print/" + config + "/capabilities.json", function (data) {
+      console.log(data);
+    });
+
     return false;
   });
 });
