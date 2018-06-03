@@ -4,8 +4,11 @@ $(function() {
   if (server) {
     $.getJSON(server + "print/apps.json", function (data) {
       $.each(data, function(key, value) {
-        var option = $("<option></option>").attr("value",value).text(value);
-        $('form.print_box select').append(option);
+        // "default" profile does not really work for some reason
+        if (value != "default") {
+          var option = $("<option></option>").attr("value",value).text(value);
+          $('form.print_box select').append(option);
+        }
       });
     });
   }
