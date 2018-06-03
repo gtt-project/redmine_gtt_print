@@ -2,7 +2,7 @@ $(function() {
   if ($('form.print_box').length > 0) {
     var server = $('form.print_box').attr('action').replace(/\/?$/, '/');
 
-    $.getJSON("https://print.***REMOVED***/print/apps.json", function (data) {
+    $.getJSON(server + "print/apps.json", function (data) {
       $.each(data, function(key, value) {
         // "default" profile does not really work for some reason
         if (value != "default") {
