@@ -1,13 +1,7 @@
 <% if @project.nil? or @project.module_enabled?(:gtt_print) %>
 <%= content_tag(:h3, l(:label_gtt_print_title)) %>
-<form action="#" method="post" class="print_box">
+<form action="<%= Setting.plugin_redmine_gtt_print['default_print_server'] %>" method="post" class="print_box">
   <select name="template">
-    <option value="1">TPL-FORM-000001</option>
-    <option value="2">TPL-FORM-000002</option>
-    <option value="3">TPL-FORM-000003</option>
-    <option value="4">TPL-FORM-000004</option>
-    <option value="5">TPL-FORM-000005</option>
-    <option value="6">TPL-FORM-000006</option>
   </select>
   <%= content_tag(:input, nil, type: "button", value: l(:button_gtt_print_submit)) %>
 </form>
