@@ -35,6 +35,9 @@ $(function() {
     var format = "pdf";
     var layout = 0;
 
+    console.log(requestData);
+    var startTime = new Date().getTime();
+
     $.ajax({
       type: 'POST',
       url: server + "print/" + id + "/report." + format,
@@ -42,8 +45,36 @@ $(function() {
         spec: JSON.stringify(requestData)
       },
       success: function (response) {
-        console.log(response)
+        downloadWhenReady(startTime, response.ref);
+      },
+      error: function (data) {
+        console.log(data);
       }
     });
   };
+
+  function downloadWhenReady(startTime, reference) {
+    if ((new Date().getTime() - startTime) > 30000) {
+      console.log('Gave up waiting after 30 seconds');
+    }
+    else {
+      setTimeout(function () {
+        $.ajax({
+          type: 'GET',
+          url: server + "print/status/" + reference+ ".json",
+          dataType: 'json',
+          success: function (response) {
+            if (!response.done) {
+              downloadWhenReady(startTime, reference);
+            } else {
+              window.location = server + "print/report/" + reference;
+            }
+          },
+          error: function (data) {
+            console.log('Error occurred requesting status');
+          }
+        });
+      }, 500);
+    }
+  }
 });
