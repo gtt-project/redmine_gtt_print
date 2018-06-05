@@ -15,16 +15,35 @@ $(function() {
 
   $(document).on('click', '.print_box input[type=button]', function (e) {
 
-    var config = $('form.print_box select').val();
+    var appId = $('form.print_box select').val();
 
-    $.getJSON(server + "print/" + config + "/capabilities.json", function (data) {
-      console.log(data);
+    $.ajax({
+      type: 'GET',
+      url: server + "print/" + appId + "/exampleRequest.json",
+      dataType: 'json',
+      success: function (data) {
+        requestPrint(appId, JSON.parse(data.requestData));
+      }
     });
 
     return false;
   });
 
-  // var requestPrint = function () {
+  var requestPrint = function (id, requestData) {
 
-  // };
+    // Defaults
+    var format = "pdf";
+    var layout = 0;
+
+    $.ajax({
+      type: 'POST',
+      url: server + "print/" + id + "/report." + format,
+      data: {
+        spec: JSON.stringify(requestData)
+      },
+      success: function (response) {
+        console.log(response)
+      }
+    });
+  };
 });
