@@ -52,6 +52,9 @@ $(function() {
       requestData.attributes.map.center = ol.extent.getCenter(feature.getGeometry().getExtent());
     }
 
+    // Apply template variables
+    requestData.attributes.title = paramObj["issue[subject]"];
+
     console.log(requestData);
     var startTime = new Date().getTime();
 
