@@ -35,6 +35,23 @@ $(function() {
     var format = "pdf";
     var layout = 0;
 
+    var paramObj = {};
+    $.each($('#issue-form').serializeArray(), function(_, kv) {
+      paramObj[kv.name] = kv.value;
+    });
+
+    // Apply geo data if exists
+    if (requestData.attributes.map.layers[0].geoJson && paramObj["issue[geojson]"]) {
+      var feature = (new ol.format.GeoJSON()).readFeature(
+        JSON.parse(paramObj["issue[geojson]"])
+      );
+      feature.set('subject', paramObj["issue[subject]"]);
+      feature.getGeometry().transform('EPSG:4326','EPSG:3857');
+
+      requestData.attributes.map.layers[0].geoJson = JSON.parse((new ol.format.GeoJSON()).writeFeatures([feature]));
+      requestData.attributes.map.center = ol.extent.getCenter(feature.getGeometry().getExtent());
+    }
+
     console.log(requestData);
     var startTime = new Date().getTime();
 
