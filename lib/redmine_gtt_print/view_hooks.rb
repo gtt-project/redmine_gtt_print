@@ -3,6 +3,7 @@ module RedmineGttPrint
 
     render_on :view_layouts_base_html_head, inline: <<-END
         <%= stylesheet_link_tag 'gtt_print', plugin: 'redmine_gtt_print' %>
+        <%= javascript_include_tag 'moment.min', plugin: 'redmine_gtt_print' %>
         <%= javascript_include_tag 'gtt_print', plugin: 'redmine_gtt_print' %>
     END
 

@@ -1,74 +1,163 @@
 $(function() {
+
+  var capabilities = false;
+
   if ($('form.print_box').length > 0) {
     var server = $('form.print_box').attr('action').replace(/\/?$/, '/');
 
     $.getJSON(server + "print/apps.json", function (data) {
       $.each(data, function(key, value) {
         // "default" profile does not really work for some reason
-        if (value != "default") {
-          var option = $("<option></option>").attr("value",value).text(value);
-          $('form.print_box select').append(option);
+        if (value != "default" && value.split("_")[0] != "DEMO") {
+          var option = $("<option></option>").attr("value",value).text(value.split("_")[1]);
+          $('form.print_box select[name=template]').append(option);
         }
       });
+      $('form.print_box select[name=template]').change();
     });
   }
 
-  $(document).on('click', '.print_box input[type=button]', function (e) {
+  var apikey = "";
+  $.get('/my/api_key').done(function(data){
+    apikey = $('#content > div.box > pre', $(data)).first().text();
+  });
 
+  $('form.print_box select').on('change', function (e) {
+    $.ajax({
+      type: 'GET',
+      url: server + "print/" + $('form.print_box select').val() + "/capabilities.json",
+      dataType: 'json',
+      success: function (data) {
+
+        $.each(data.formats, function(key, value) {
+          var option = $("<option></option>").attr("value",value).text(value);
+          $('form.print_box select[name=format]').append(option);
+          $('form.print_box select[name=format]').val("pdf");
+        });
+
+        $.each(data.layouts, function(key, value) {
+          var option = $("<option></option>").attr("value",key).text(value.name);
+          $('form.print_box select[name=layout]').append(option);
+        });
+
+        capabilities = data;
+      }
+    });
+  });
+
+  $('form.print_box input[type=button]').on('click', function (e) {
     var appId = $('form.print_box select').val();
-
     $.ajax({
       type: 'GET',
       url: server + "print/" + appId + "/exampleRequest.json",
       dataType: 'json',
       success: function (data) {
-        requestPrint(appId, JSON.parse(data.requestData));
+        requestPrint(appId, capabilities, JSON.parse(data.requestData));
       }
     });
-
-    return false;
   });
 
-  var requestPrint = function (id, requestData) {
+  var requestPrint = function (id, config, requestData) {
 
     // Defaults
-    var format = "pdf";
-    var layout = 0;
+    var format = $('form.print_box select[name=format]').val();
+    var layout = $('form.print_box select[name=layout]').val();
 
-    var paramObj = {};
-    $.each($('#issue-form').serializeArray(), function(_, kv) {
-      paramObj[kv.name] = kv.value;
-    });
-
-    // Apply geo data if exists
-    if (requestData.attributes.map.layers[0].geoJson && paramObj["issue[geojson]"]) {
-      var feature = (new ol.format.GeoJSON()).readFeature(
-        JSON.parse(paramObj["issue[geojson]"])
-      );
-      feature.set('subject', paramObj["issue[subject]"]);
-      feature.getGeometry().transform('EPSG:4326','EPSG:3857');
-
-      requestData.attributes.map.layers[0].geoJson = JSON.parse((new ol.format.GeoJSON()).writeFeatures([feature]));
-      requestData.attributes.map.center = ol.extent.getCenter(feature.getGeometry().getExtent());
-    }
-
-    // Apply template variables
-    requestData.attributes.title = paramObj["issue[subject]"];
-
-    console.log(requestData);
-    var startTime = new Date().getTime();
+    // var paramObj = {};
+    // $.each($('#issue-form').serializeArray(), function(_, kv) {
+    //   paramObj[kv.name] = kv.value;
+    // });
 
     $.ajax({
-      type: 'POST',
-      url: server + "print/" + id + "/report." + format,
+      type: 'GET',
+      url: $('#issue-form').attr("action") + ".json",
+      headers: {'X-Redmine-API-Key': apikey},
       data: {
-        spec: JSON.stringify(requestData)
+        include: "attachments,journals"
       },
-      success: function (response) {
-        downloadWhenReady(startTime, response.ref);
-      },
-      error: function (data) {
-        console.log(data);
+      dataType: 'json',
+      success: function (data) {
+
+        // Handle each available attribute
+        $.each(config.layouts[layout].attributes, function(key, obj) {
+
+          // Apply geo data if exists
+          if (obj.name === "map" && data.issue.geojson) {
+            if(requestData.attributes.map.layers[0].geoJson) {
+              var feature = (new ol.format.GeoJSON()).readFeature(data.issue.geojson);
+              feature.set('foo','bar');
+              feature.getGeometry().transform('EPSG:4326','EPSG:3857');
+
+              requestData.attributes.map.layers[0].geoJson = JSON.parse((new ol.format.GeoJSON()).writeFeatures([feature]));
+              requestData.attributes.map.center = ol.extent.getCenter(feature.getGeometry().getExtent());
+            }
+            return true;
+          }
+
+          switch (obj.name) {
+            case 'scalebar':
+              // currently nothing to do
+              break;
+
+            case 'freetext':
+              requestData.attributes[obj.name] = $('form.print_box textarea').val();
+              break;
+
+            case 'assigned_to':
+            case 'author':
+            case 'priority':
+            case 'project':
+            case 'status':
+            case 'tracker':
+              requestData.attributes[obj.name] = data.issue[obj.name].name;
+              break;
+
+            case 'created_on':
+            case 'updated_on':
+            case 'due_date':
+            case 'start_date':
+              requestData.attributes[obj.name] = moment(data.issue[obj.name]).format('YYYY-MM-DD');
+              break;
+
+            case 'description':
+            case 'done_ratio':
+            case 'estimated_hours':
+            case 'id':
+            case 'subject':
+            case 'total_estimated_hours':
+              requestData.attributes[obj.name] = data.issue[obj.name];
+              break;
+
+            default:
+              requestData.attributes[obj.name] = obj.default;
+              break;
+          }
+
+          if (data.issue.custom_fields) {
+            $.each(data.issue.custom_fields, function (key,field) {
+              if (obj.name === field.name) {
+                requestData.attributes[obj.name] = field.value;
+              }
+            });
+          }
+        });
+
+        console.log(requestData);
+        var startTime = new Date().getTime();
+
+        $.ajax({
+          type: 'POST',
+          url: server + "print/" + id + "/report." + format,
+          data: {
+            spec: JSON.stringify(requestData)
+          },
+          success: function (response) {
+            downloadWhenReady(startTime, response.ref);
+          },
+          error: function (data) {
+            console.log(data);
+          }
+        });
       }
     });
   };

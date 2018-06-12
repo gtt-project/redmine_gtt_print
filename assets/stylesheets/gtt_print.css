@@ -1,1 +1,7 @@
 /* CSS for gtt_print plugin */
+form.print_box textarea{
+  margin-top: 10px;
+  display: block;
+  width: 75%;
+  min-height: 5.7em;
+}
