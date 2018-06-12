@@ -78,6 +78,8 @@ $(function() {
       dataType: 'json',
       success: function (data) {
 
+        console.log(data.issue);
+
         // Handle each available attribute
         $.each(config.layouts[layout].attributes, function(key, obj) {
 
