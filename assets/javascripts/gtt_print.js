@@ -103,6 +103,15 @@ $(function() {
               requestData.attributes[obj.name] = $('form.print_box textarea').val();
               break;
 
+            case 'is_private':
+              if (data.issue[obj.name] === true) {
+                requestData.attributes[obj.name] = "非公開";
+              }
+              else {
+                requestData.attributes[obj.name] = "公開";
+              }
+              break;
+
             case 'assigned_to':
             case 'author':
             case 'priority':
