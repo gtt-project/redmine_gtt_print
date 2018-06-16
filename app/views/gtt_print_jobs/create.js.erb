@@ -1,0 +1,7 @@
+<% if @result.success? %>
+var startTime = new Date().getTime();
+GttPrint.downloadWhenReady(startTime,
+                           '<%= status_gtt_print_job_path(id: @result.ref) %>');
+<% else %>
+  alert("<%= l :label_gtt_print_failed %>");
+<% end %>

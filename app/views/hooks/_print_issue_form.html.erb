@@ -1,6 +1,7 @@
 <% if @issue and User.current.allowed_to?(:view_gtt_print, @issue.project) %>
   <h3><%= l :label_gtt_print_title %></h3>
   <%= form_tag gtt_print_jobs_path, remote: true do |f| %>
+    <%= hidden_field_tag :issue_id, @issue.id %>
     <%= select_tag :gtt_print_template, options_from_collection_for_select(RedmineGttPrint.mapfish.templates, :to_s, :to_s) %>
     <button type="submit"><%= l :button_gtt_print_submit %></button>
   <% end %>
