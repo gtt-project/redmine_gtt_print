@@ -1,4 +1,5 @@
 en:
   field_gtt_print_server: Default print server URL
   label_gtt_print_title: Template Print
+  label_gtt_print_failed: Printing failed
   button_gtt_print_submit: Print

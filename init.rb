@@ -23,7 +23,7 @@ Redmine::Plugin.register :redmine_gtt_print do
   project_module :gtt_print do
 
     permission :view_gtt_print, {
-      gtt_print_jobs: %i(create show)
+      gtt_print_jobs: %i(create show status)
     }, require: :member, read: true
 
   end
