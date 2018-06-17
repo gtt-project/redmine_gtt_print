@@ -40,7 +40,12 @@ module RedmineGttPrint
         longitudeFirst: true,
         layers: [
           {
-            geoJson: data[:geojson],
+            geoJson: {
+              features: [
+                data[:geojson]
+              ],
+              type: "FeatureCollection",
+            },
             style: {
               val1: "#FF4500",
               "*": {

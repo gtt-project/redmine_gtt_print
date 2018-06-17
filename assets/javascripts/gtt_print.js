@@ -9,7 +9,7 @@ var GttPrint = {
               } else if ((new Date().getTime() - startTime) > 30000) {
                 console.log('downloadWhenReady: giving up after 30 seconds');
               } else {
-                downloadWhenReady(startTime, path);
+                GttPrint.downloadWhenReady(startTime, path);
               }
             }, 'json');
     }, 500);

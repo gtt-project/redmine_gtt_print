@@ -27,8 +27,10 @@ class IssueToJsonTest < ActiveSupport::TestCase
     assert map = h['attributes']['map']
     assert_equal 2, map['center'].size
     assert geo = map['layers'][0]['geoJson']
-    assert_equal 'Feature', geo['type']
-    assert geom = geo['geometry']
+    assert_equal 'FeatureCollection', geo['type']
+    assert feature = geo['features'][0]
+    assert_equal 'Feature', feature['type']
+    assert geom = feature['geometry']
     assert_equal 'Polygon', geom['type']
     assert_equal 15052703.2783315, geom['coordinates'].flatten.first
   end
