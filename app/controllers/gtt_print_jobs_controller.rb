@@ -33,7 +33,7 @@ class GttPrintJobsController < ApplicationController
   def show
     r = RedmineGttPrint.mapfish.get_print params[:id]
     if pdf = r.pdf
-      send_data pdf
+      send_data pdf, filename: "report.pdf", type: 'application/pdf'
     else
       render text: r.error, status: 500
     end

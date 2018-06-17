@@ -1,6 +1,8 @@
 require_relative '../test_helper'
 
 class MapfishTest < ActionDispatch::IntegrationTest
+  include GttTestData
+
   fixtures :projects,
            :trackers,
            :projects_trackers,

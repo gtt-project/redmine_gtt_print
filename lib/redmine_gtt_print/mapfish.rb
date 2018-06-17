@@ -47,6 +47,7 @@ module RedmineGttPrint
 
     def request_print(json, template, format)
       url = "#{@host}/print/#{template}/report.#{format}"
+      #(File.open("/tmp/mapfish.json", "wb") << json).close
       r = HTTParty.post url, body: json, headers: { 'Content-Type' => 'application/json' }
       if r.success?
         json = JSON.parse r.body
