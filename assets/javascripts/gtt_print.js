@@ -4,12 +4,13 @@ $(function() {
 
   if ($('form.print_box').length > 0) {
     var server = $('form.print_box').attr('action').replace(/\/?$/, '/');
+    var tracker = $('select#issue_tracker_id option:selected').text();
 
     $.getJSON(server + "print/apps.json", function (data) {
       $.each(data, function(key, value) {
         // "default" profile does not really work for some reason
-        if (value != "default" && value.split("_")[0] != "DEMO") {
-          var option = $("<option></option>").attr("value",value).text(value.split("_")[1]);
+        if (value === tracker) {
+          var option = $("<option></option>").attr("value",value).text(value);
           $('form.print_box select[name=template]').append(option);
         }
       });
@@ -22,7 +23,7 @@ $(function() {
     apikey = $('#content > div.box > pre', $(data)).first().text();
   });
 
-  $('form.print_box select').on('change', function (e) {
+  $('form.print_box select[name=template]').on('change', function (e) {
     $.ajax({
       type: 'GET',
       url: server + "print/" + $('form.print_box select').val() + "/capabilities.json",
@@ -52,7 +53,8 @@ $(function() {
       url: server + "print/" + appId + "/exampleRequest.json",
       dataType: 'json',
       success: function (data) {
-        requestPrint(appId, capabilities, JSON.parse(data.requestData));
+        var layout = $('form.print_box select[name=layout] option:selected').text();
+        requestPrint(appId, capabilities, JSON.parse(data[layout]));
       }
     });
   });
@@ -62,11 +64,6 @@ $(function() {
     // Defaults
     var format = $('form.print_box select[name=format]').val();
     var layout = $('form.print_box select[name=layout]').val();
-
-    // var paramObj = {};
-    // $.each($('#issue-form').serializeArray(), function(_, kv) {
-    //   paramObj[kv.name] = kv.value;
-    // });
 
     $.ajax({
       type: 'GET',
