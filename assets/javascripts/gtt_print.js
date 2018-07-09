@@ -157,6 +157,25 @@ $(function() {
           }
         });
 
+        if (data.issue.attachments) {
+          $.each(data.issue.attachments, function (key,attachment) {
+            var content_type = attachment.content_type.split("/"); // Can be done better?
+            if (content_type[0] === "image") {
+              // ToDo pass attachment information
+              console.log(key,attachment);
+            }
+          });
+        }
+
+        if (data.issue.journals) {
+          $.each(data.issue.journals, function (key,journal) {
+            if (journal.notes) {
+              // ToDo pass journal information
+              console.log(key,journal);
+            }
+          });
+        }
+
         console.log(requestData);
         var startTime = new Date().getTime();
 
