@@ -111,13 +111,20 @@ $(function() {
               }
               break;
 
-            case 'assigned_to':
-            case 'author':
-            case 'priority':
-            case 'project':
-            case 'status':
-            case 'tracker':
-              requestData.attributes[obj.name] = data.issue[obj.name].name;
+            case 'assigned_to.id':
+            case 'assigned_to.name':
+            case 'author.id':
+            case 'author.name':
+            case 'priority.id':
+            case 'priority.name':
+            case 'project.id':
+            case 'project.name':
+            case 'status.id':
+            case 'status.name':
+            case 'tracker.id':
+            case 'tracker.name':
+              var prop = obj.name.split(".");
+              requestData.attributes[obj.name] = data.issue[prop[0]][prop[1]];
               break;
 
             case 'created_on':
