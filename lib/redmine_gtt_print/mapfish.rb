@@ -8,8 +8,23 @@ module RedmineGttPrint
       @host = host
     end
 
-    def templates
-      @templates ||= find_templates
+    def print_configs
+      @print_configs ||= find_print_configs
+    end
+
+    def layouts(print_config)
+      if caps = get_capabilities(print_config) and layouts = caps['layouts']
+        layouts.map{|l|l['name']}
+      end
+    end
+
+    def get_capabilities(print_config)
+      r = HTTParty.get "#{@host}/print/#{print_config}/capabilities.json"
+      if r.success?
+        JSON.parse r.body
+      else
+        :not_found
+      end
     end
 
     # {"done"=>true, "status"=>"finished", "elapsedTime"=>6588, "waitingTime"=>0, "downloadURL"=>"/mapfish/print/report/a790a8e0-d2b9-4f27-8a83-d58a70b66568@36419944-3e1d-4b17-9aab-f56aec338242"}
@@ -34,9 +49,10 @@ module RedmineGttPrint
       end
     end
 
-    def print_issue(issue, template, format: 'pdf')
-      json = IssueToJson.(issue)
-      if ref = request_print(json, template, format)
+    def print_issue(issue, layout, format: 'pdf')
+      json = IssueToJson.(issue, layout)
+      print_config = RedmineGttPrint.tracker_config(issue.tracker)
+      if ref = request_print(json, print_config, format)
         CreateJobResult.new success: true, ref: ref
       else
         CreateJobResult.new
@@ -45,8 +61,8 @@ module RedmineGttPrint
 
     private
 
-    def request_print(json, template, format)
-      url = "#{@host}/print/#{template}/report.#{format}"
+    def request_print(json, print_config, format)
+      url = "#{@host}/print/#{print_config}/report.#{format}"
       #(File.open("/tmp/mapfish.json", "wb") << json).close
       r = HTTParty.post url, body: json, headers: { 'Content-Type' => 'application/json' }
       if r.success?
@@ -58,12 +74,12 @@ module RedmineGttPrint
       end
     end
 
-    def find_templates
+    def find_print_configs
       r = HTTParty.get "#{@host}/print/apps.json"
       if r.success?
         JSON.parse r.body
       else
-        Rails.logger.error "failed to fetch print templates: #{r.code}"
+        Rails.logger.error "failed to fetch print configs: #{r.code}"
         []
       end
     end

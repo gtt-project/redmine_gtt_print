@@ -12,6 +12,10 @@ module RedmineGttPrint
     (settings['tracker_config'] || {})[tracker.id.to_s]
   end
 
+  def self.layouts_for_tracker(tracker)
+    mapfish.layouts tracker_config tracker
+  end
+
   def self.mapfish
     RequestStore.store[:mapfish] ||=
       RedmineGttPrint::Mapfish.new(host: settings['default_print_server'])

@@ -33,7 +33,7 @@ class IssuePrintTest < Redmine::IntegrationTest
   def test_should_create_print_job
     get "/issues/#{@issue.id}"
     assert_response :success
-    assert_select '#gtt_print_template option', text: "test-template", count: 0
+    assert_select '#gtt_print_layout option', text: "A4 portrait", count: 0
 
     log_user 'jsmith', 'jsmith'
     get '/projects/ecookbook/issues/new'
@@ -41,14 +41,14 @@ class IssuePrintTest < Redmine::IntegrationTest
 
     get "/issues/#{@issue.id}"
     assert_response :success
-    assert_select '#gtt_print_template option', text: "test-template"
+    assert_select '#gtt_print_layout option', text: "A4 portrait"
 
     xhr :post, "/gtt_print_jobs", { issue_id: @issue.id,
-                                    gtt_print_template: "test-template" }
+                                    gtt_print_layout: "A4 portrait" }
     assert_response :created
 
     assert_equal @issue, @mapfish.issue
-    assert_equal 'test-template', @mapfish.template
+    assert_equal 'A4 portrait', @mapfish.template
   end
 
   def test_should_check_job_status

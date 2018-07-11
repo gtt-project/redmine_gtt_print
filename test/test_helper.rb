@@ -2,8 +2,12 @@ require File.expand_path(File.dirname(__FILE__) + '/../../redmine_gtt/test/test_
 
 class TestMapfish
   attr_reader :issue, :template
-  def templates
+  def print_configs
     ['test-template']
+  end
+
+  def layouts(config)
+    ['A4 portrait']
   end
 
   Result = ImmutableStruct.new(:success?, :ref)

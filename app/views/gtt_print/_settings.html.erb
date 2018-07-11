@@ -13,7 +13,7 @@
     <%= content_tag :label, t.name %>
     <%= select_tag "settings[tracker_config][#{t.id}]",
       content_tag(:option, l(:label_gtt_no_printing), value: '') +
-      options_from_collection_for_select(RedmineGttPrint.mapfish.templates,
+      options_from_collection_for_select(RedmineGttPrint.mapfish.print_configs,
                                          :to_s,
                                          :to_s,
                                          RedmineGttPrint.tracker_config(t)) %>

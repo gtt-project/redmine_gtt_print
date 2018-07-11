@@ -10,8 +10,8 @@ class GttPrintJobsController < ApplicationController
   menu_item :issues
 
   def create
-    if @issue and (template = params[:gtt_print_template]).present?
-      @result = RedmineGttPrint.mapfish.print_issue @issue, template
+    if @issue and (layout = params[:gtt_print_layout]).present?
+      @result = RedmineGttPrint.mapfish.print_issue @issue, layout
       render status: (@result.success? ? :created : 422)
     else
       render_404
