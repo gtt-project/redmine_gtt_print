@@ -59,11 +59,22 @@ module RedmineGttPrint
       end
     end
 
+    def print_issues(issues, layout, format: 'pdf')
+      json = IssuesToJson.(issues, layout)
+      if ref = request_print(json, RedmineGttPrint.list_config, format)
+        CreateJobResult.new success: true, ref: ref
+      else
+        CreateJobResult.new
+      end
+    end
+
     private
 
     def request_print(json, print_config, format)
       url = "#{@host}/print/#{print_config}/report.#{format}"
-      #(File.open("/tmp/mapfish.json", "wb") << json).close
+      if Rails.env.development?
+        (File.open(Rails.root.join("tmp/mapfish.json"), "wb") << json).close
+      end
       r = HTTParty.post url, body: json, headers: { 'Content-Type' => 'application/json' }
       if r.success?
         json = JSON.parse r.body

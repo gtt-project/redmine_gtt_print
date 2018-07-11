@@ -1,6 +1,7 @@
 en:
   field_gtt_print_server: Default print server URL
   gtt_print_configurations: Print configurations
+  label_gtt_list_config: Issue lists
   label_gtt_no_printing: No printing
   label_gtt_print_title: Template Print
   label_gtt_print_failed: Printing failed

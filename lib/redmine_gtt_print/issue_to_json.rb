@@ -3,10 +3,6 @@ module RedmineGttPrint
   # Transforms the given issue into JSON ready to be sent to the mapfish print
   # server.
   #
-  # TODO: fetch template capabilities
-  # (https://print.mycityreport.jp/print/DEMO_gtt/capabilities.json?pretty=true)
-  # and determine issue attributes that have to be included from that.
-  #
   class IssueToJson
     def initialize(issue, layout)
       @issue = issue
@@ -20,31 +16,33 @@ module RedmineGttPrint
     def call
       json = {
         layout: @layout,
-        attributes: {
-          title: @issue.subject,
-        }
+        attributes: self.class.attributes_hash(@issue)
       }
 
       if data = @issue.geodata_for_print
-        json[:attributes][:map] = map_data(data)
+        json[:attributes][:map] = self.class.map_data(data[:center], [data[:geojson]])
       end
 
       json.to_json
     end
 
-    private
+    # the following static helpers are used by IssuesToJson as well
 
-    def map_data(data)
+    def self.attributes_hash(issue)
       {
-        center: data[:center],
+        title: issue.subject,
+      }
+    end
+
+    def self.map_data(center, features)
+      {
+        center: center,
         rotation: 0,
         longitudeFirst: true,
         layers: [
           {
             geoJson: {
-              features: [
-                data[:geojson]
-              ],
+              features: features,
               type: "FeatureCollection",
             },
             style: {

@@ -8,6 +8,16 @@ module RedmineGttPrint
     Setting.plugin_redmine_gtt_print
   end
 
+  def self.list_config
+    settings['issue_list_config']
+  end
+
+  def self.list_layouts
+    if cfg = list_config
+      mapfish.layouts cfg
+    end
+  end
+
   def self.tracker_config(tracker)
     (settings['tracker_config'] || {})[tracker.id.to_s]
   end
