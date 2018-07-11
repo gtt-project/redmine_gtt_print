@@ -2,17 +2,21 @@ class GttPrintJobsController < ApplicationController
   layout 'base'
 
   before_action :find_optional_project
-  before_action :find_issue, only: :create
+  before_action :find_issues, only: :create
 
-  before_action :authorize, only: :create
+  before_action :authorize_create, only: :create
   before_action :authorize_global, except: :create
 
   menu_item :issues
 
   def create
-    if @issue and (layout = params[:gtt_print_layout]).present?
-      @result = RedmineGttPrint.mapfish.print_issue @issue, layout
-      render status: (@result.success? ? :created : 422)
+    if (layout = params[:gtt_print_layout]).present?
+      if @issue
+        @result = RedmineGttPrint.mapfish.print_issue @issue, layout
+      elsif @issues
+        @result = RedmineGttPrint.mapfish.print_issues @issues, layout
+      end
+      render status: (@result&.success? ? :created : 422)
     else
       render_404
     end
@@ -41,9 +45,19 @@ class GttPrintJobsController < ApplicationController
 
   private
 
-  def find_issue
+  def authorize_create
+    if @project
+      authorize
+    else
+      authorize_global
+    end
+  end
+
+  def find_issues
     if params[:issue_id]
       @issue = (@project ? @project.issues : Issue).visible.find params[:issue_id]
+    elsif params[:issue_ids]
+      @issues = Issue.visible.where(id: params[:issue_ids].split(','))
     end
     @project ||= @issue.project if @issue
   end

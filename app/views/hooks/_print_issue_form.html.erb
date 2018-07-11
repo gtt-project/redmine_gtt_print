@@ -7,3 +7,17 @@
   <% end %>
 <% end %>
 
+<% if @issues and
+    ( @project && User.current.allowed_to?(:view_gtt_print, @project) or
+      User.current.allowed_to?(:view_gtt_print, nil, global: true) ) and
+    (layouts = RedmineGttPrint.list_layouts).present?
+%>
+
+  <h3><%= l :label_gtt_print_title %></h3>
+  <%= form_tag gtt_print_jobs_path, remote: true do |f| %>
+    <%= hidden_field_tag :issue_ids, @issues.map(&:id).join(',') %>
+    <%= select_tag :gtt_print_layout, options_from_collection_for_select(layouts, :to_s, :to_s) %>
+    <button type="submit"><%= l :button_gtt_print_submit %></button>
+  <% end %>
+
+<% end %>

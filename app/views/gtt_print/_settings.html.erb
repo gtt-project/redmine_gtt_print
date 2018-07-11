@@ -19,3 +19,13 @@
                                          RedmineGttPrint.tracker_config(t)) %>
   </p>
 <% end %>
+
+<p>
+    <%= content_tag :label, l(:label_gtt_list_config) %>
+    <%= select_tag "settings[issue_list_config]",
+      content_tag(:option, l(:label_gtt_no_printing), value: '') +
+      options_from_collection_for_select(RedmineGttPrint.mapfish.print_configs,
+                                         :to_s,
+                                         :to_s,
+                                         RedmineGttPrint.list_config) %>
+</p>
