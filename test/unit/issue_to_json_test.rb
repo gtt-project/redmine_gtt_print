@@ -21,8 +21,9 @@ class IssueToJsonTest < ActiveSupport::TestCase
   end
 
   test 'should build mapfish json' do
-    assert j = RedmineGttPrint::IssueToJson.(@issue)
+    assert j = RedmineGttPrint::IssueToJson.(@issue, 'das layout')
     assert h = JSON.parse(j)
+    assert_equal 'das layout', h['layout']
     assert_equal @issue.subject, h['attributes']['title']
     assert map = h['attributes']['map']
     assert_equal 2, map['center'].size
@@ -37,7 +38,7 @@ class IssueToJsonTest < ActiveSupport::TestCase
 
   test 'should handle issue without geometry' do
     i = Issue.find(2)
-    assert j = RedmineGttPrint::IssueToJson.(i)
+    assert j = RedmineGttPrint::IssueToJson.(i, 'layout')
     assert h = JSON.parse(j)
     assert_equal i.subject, h['attributes']['title']
     assert_nil h['attributes']['map']

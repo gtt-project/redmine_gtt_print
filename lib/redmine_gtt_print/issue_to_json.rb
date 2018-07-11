@@ -8,17 +8,18 @@ module RedmineGttPrint
   # and determine issue attributes that have to be included from that.
   #
   class IssueToJson
-    def initialize(issue)
+    def initialize(issue, layout)
       @issue = issue
+      @layout = layout
     end
 
-    def self.call(issue)
-      new(issue).call
+    def self.call(issue, layout)
+      new(issue, layout).call
     end
 
     def call
       json = {
-        layout: "A4 portrait",
+        layout: @layout,
         attributes: {
           title: @issue.subject,
         }

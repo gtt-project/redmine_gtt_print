@@ -12,14 +12,21 @@ class MapfishTest < ActionDispatch::IntegrationTest
            :enumerations
 
   setup do
+    @issue = Issue.find 1
     @mapfish = RedmineGttPrint::Mapfish.new host: "https://print.***REMOVED***"
+    Setting.plugin_redmine_gtt_print = {'tracker_config' => { @issue.tracker.id.to_s => 'DEMO_gtt' }}
   end
 
+  test "should have print configs" do
+    assert configs = @mapfish.print_configs
+    assert_equal Array, configs.class
+    assert configs.include?("DEMO_gtt")
+  end
 
-  test "should have templates" do
-    assert templates = @mapfish.templates
-    assert_equal Array, templates.class
-    assert templates.include?("default")
+  test "should have layouts for print config" do
+    assert layouts = @mapfish.layouts("DEMO_gtt")
+    assert_equal Array, layouts.class
+    assert layouts.include?("A4 portrait")
   end
 
   test "should get status" do
@@ -27,13 +34,13 @@ class MapfishTest < ActionDispatch::IntegrationTest
   end
 
   test "should issue print job" do
-    i = Issue.find 1
+    i = @issue
     i.update_attribute :geojson, test_geojson
 
-    assert r = @mapfish.print_issue(i, 'DEMO_gtt')
+    assert r = @mapfish.print_issue(i, 'A4 portrait')
     assert r.success?
     assert ref = r.ref
-    sleep 2
+    sleep 3
     assert_equal :done, @mapfish.get_status(ref)
     assert pdf = @mapfish.get_print(ref)
     (File.open('print.pdf', 'wb') << pdf).close
