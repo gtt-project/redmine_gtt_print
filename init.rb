@@ -15,7 +15,8 @@ Redmine::Plugin.register :redmine_gtt_print do
 
   settings(
     default: {
-      'default_print_server' => "http://localhost:8080/mfp"
+      'default_print_server' => "http://localhost:8080/mfp",
+      "tracker_config" => {}
     },
     partial: 'gtt_print/settings'
   )
