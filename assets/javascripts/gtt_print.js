@@ -157,24 +157,31 @@ $(function() {
           }
         });
 
+        // Handle attachemnts
+        requestData.attributes["attachments"] = [];
         if (data.issue.attachments) {
           $.each(data.issue.attachments, function (key,attachment) {
             var content_type = attachment.content_type.split("/"); // Can be done better?
             if (content_type[0] === "image") {
               // ToDo pass attachment information
-              console.log(key,attachment);
+              requestData.attributes["attachments"].push(attachment);
             }
           });
         }
 
+        // Handle journals (notes)
+        requestData.attributes["journals"] = [];
         if (data.issue.journals) {
           $.each(data.issue.journals, function (key,journal) {
             if (journal.notes) {
               // ToDo pass journal information
-              console.log(key,journal);
+              requestData.attributes["journals"].push(journal);
             }
           });
         }
+
+        // Experimental
+        requestData.attributes["project"] = data.issue.project;
 
         console.log(requestData);
         var startTime = new Date().getTime();
