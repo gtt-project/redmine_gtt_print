@@ -1,7 +1,7 @@
 require File.expand_path(File.dirname(__FILE__) + '/../../redmine_gtt/test/test_helper')
 
 class TestMapfish
-  attr_reader :issue, :template
+  attr_reader :issue, :layout
   def print_configs
     ['test-template']
   end
@@ -25,9 +25,9 @@ class TestMapfish
     @ready_jobs << name
   end
 
-  def print_issue(issue, template)
-    @issue = issue
-    @template = template
+  def print(job)
+    @issue = job.issue
+    @layout = job.layout
 
     Result.new(success: true, ref: 'some-job')
   end

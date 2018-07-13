@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module RedmineGttPrint
   class Mapfish
 
@@ -27,6 +29,14 @@ module RedmineGttPrint
       end
     end
 
+    def print(job)
+      if ref = request_print(job.json, job.print_config, job.format)
+        CreateJobResult.new success: true, ref: ref
+      else
+        CreateJobResult.new
+      end
+    end
+
     # {"done"=>true, "status"=>"finished", "elapsedTime"=>6588, "waitingTime"=>0, "downloadURL"=>"/mapfish/print/report/a790a8e0-d2b9-4f27-8a83-d58a70b66568@36419944-3e1d-4b17-9aab-f56aec338242"}
     def get_status(ref)
       r = HTTParty.get "#{@host}/print/status/#{ref}.json"
@@ -46,25 +56,6 @@ module RedmineGttPrint
       else
         Rails.logger.error "failed to fetch print result from #{url} : #{r.code}\n#{r.body}"
         PrintResult.new error: r.body
-      end
-    end
-
-    def print_issue(issue, layout, format: 'pdf')
-      json = IssueToJson.(issue, layout)
-      print_config = RedmineGttPrint.tracker_config(issue.tracker)
-      if ref = request_print(json, print_config, format)
-        CreateJobResult.new success: true, ref: ref
-      else
-        CreateJobResult.new
-      end
-    end
-
-    def print_issues(issues, layout, format: 'pdf')
-      json = IssuesToJson.(issues, layout)
-      if ref = request_print(json, RedmineGttPrint.list_config, format)
-        CreateJobResult.new success: true, ref: ref
-      else
-        CreateJobResult.new
       end
     end
 
