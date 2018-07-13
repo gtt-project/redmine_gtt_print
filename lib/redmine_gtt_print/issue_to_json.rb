@@ -30,7 +30,9 @@ module RedmineGttPrint
 
     def self.attributes_hash(issue)
       {
-        title: issue.subject,
+        # initially "title" was part of the print template, but it has been removed.
+        # we can configure other default values here:
+        # title: issue.subject,
       }
     end
 
