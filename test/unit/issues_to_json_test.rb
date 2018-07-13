@@ -24,8 +24,8 @@ class IssuesToJsonTest < ActiveSupport::TestCase
     assert j = RedmineGttPrint::IssuesToJson.(@issues, 'das layout')
     assert h = JSON.parse(j)
     assert_equal 'das layout', h['layout']
-    assert_equal @issues[0].subject, h['attributes']['issues'][0]['title']
-    assert_equal @issues[1].subject, h['attributes']['issues'][1]['title']
+    assert_equal @issues[0].subject, h['attributes']['issues'][0]['subject']
+    assert_equal @issues[1].subject, h['attributes']['issues'][1]['subject']
 
     assert map = h['attributes']['map']
     assert_equal 2, map['center'].size
