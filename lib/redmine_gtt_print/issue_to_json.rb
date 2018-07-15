@@ -34,39 +34,38 @@ module RedmineGttPrint
         id: issue.id,
         subject: issue.subject,
         project_id: issue.project_id,
-        project_name: "WIP",
+        project_name: (Project.find issue.project_id).name,
         tracker_id: issue.tracker_id,
-        tracker_name: "WIP",
+        tracker_name: (Tracker.find issue.tracker_id).name,
         status_id: issue.status_id,
-        status_name: "WIP",
+        status_name: (IssueStatus.find issue.status_id).name,
         priority_id: issue.priority_id,
-        priority_name: "WIP",
+        priority_name: (IssuePriority.find issue.priority_id).name,
         # category_id: issue.category_id,
         author_id: issue.author_id,
-        author_name: "WIP",
+        author_name: (User.find issue.author_id).name,
         assigned_to_id: issue.assigned_to_id,
-        assigned_to_name: "WIP",
+        assigned_to_name: issue.assigned_to_id ? (User.find issue.author_id).name : "WIP",
         description: issue.description,
         is_private: issue.is_private,
         start_date: issue.start_date,
         done_date: issue.closed_on,
         # due_date: issue.due_date,
         estimated_hours: issue.estimated_hours,
-        total_estimated_hours: "WIP",
         created_on: issue.created_on,
         updated_on: issue.updated_on,
 
         # Custom text
-        # custom_text: other_attributes[:custom_text]
+        custom_text: other_attributes[:custom_text]
 
         # Experimental
         # issue: issue,
         # project: (Project.find issue.project_id),
         # tracker: (Tracker.find issue.tracker_id),
-        # status: (Status.find issue.status_id),
-        # priority: (Priority.find issue.priority_id),
-        # author: (Author.find issue.author_id),
-        # assigned_to: (Assigned_to.find issue.assigned_to_id),
+        # status: (IssueStatus.find issue.status_id),
+        # priority: (IssuePriority.find issue.priority_id),
+        # author: (User.find issue.author_id),
+        # assigned_to: (User.find issue.assigned_to_id),
       }
     end
 
