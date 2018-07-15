@@ -10,15 +10,14 @@ class GttPrintJobsController < ApplicationController
   menu_item :issues
 
   def create
-    if (layout = params[:gtt_print_layout]).present?
-      if @issue
-        @result = RedmineGttPrint.mapfish.print_issue @issue, layout
-      elsif @issues
-        @result = RedmineGttPrint.mapfish.print_issues @issues, layout
-      end
+    job = GttPrintJob.new gtt_print_job_params
+    job.issue = @issue
+    job.issues = @issues
+    if job.valid?
+      @result = RedmineGttPrint.mapfish.print job
       render status: (@result&.success? ? :created : 422)
     else
-      render_404
+      render status: 422
     end
   end
 
@@ -44,6 +43,10 @@ class GttPrintJobsController < ApplicationController
   end
 
   private
+
+  def gtt_print_job_params
+    params[:gtt_print_job].permit(:layout, :custom_text)
+  end
 
   def authorize_create
     if @project
