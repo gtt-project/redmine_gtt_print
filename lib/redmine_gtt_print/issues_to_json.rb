@@ -4,20 +4,23 @@ module RedmineGttPrint
   # mapfish print server
   #
   class IssuesToJson
-    def initialize(issues, layout)
+    def initialize(issues, layout, other_attributes = {})
       @issues = issues
       @layout = layout
+      @other_attributes = other_attributes
     end
 
-    def self.call(issues, layout)
-      new(issues, layout).call
+    def self.call(*_)
+      new(*_).call
     end
 
     def call
       hsh = {
         layout: @layout,
         attributes: {
-          issues: @issues.map{|i| IssueToJson.attributes_hash(i)}
+          issues: @issues.map{|i|
+            IssueToJson.attributes_hash(i, @other_attributes)
+          }
         }
       }
 

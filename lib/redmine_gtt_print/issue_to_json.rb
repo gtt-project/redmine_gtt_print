@@ -4,19 +4,20 @@ module RedmineGttPrint
   # server.
   #
   class IssueToJson
-    def initialize(issue, layout)
+    def initialize(issue, layout, other_attributes = {})
       @issue = issue
       @layout = layout
+      @other_attributes = other_attributes
     end
 
-    def self.call(issue, layout)
-      new(issue, layout).call
+    def self.call(*_)
+      new(*_).call
     end
 
     def call
       json = {
         layout: @layout,
-        attributes: self.class.attributes_hash(@issue)
+        attributes: self.class.attributes_hash(@issue, @other_attributes)
       }
 
       if data = @issue.geodata_for_print
@@ -28,7 +29,7 @@ module RedmineGttPrint
 
     # the following static helpers are used by IssuesToJson as well
 
-    def self.attributes_hash(issue)
+    def self.attributes_hash(issue, other_attributes)
       {
         id: issue.id,
         subject: issue.subject,
@@ -54,6 +55,9 @@ module RedmineGttPrint
         total_estimated_hours: "WIP",
         created_on: issue.created_on,
         updated_on: issue.updated_on,
+
+        # Custom text
+        # custom_text: other_attributes[:custom_text]
 
         # Experimental
         # issue: issue,

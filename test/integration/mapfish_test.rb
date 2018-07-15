@@ -36,8 +36,9 @@ class MapfishTest < ActionDispatch::IntegrationTest
   test "should issue print job" do
     i = @issue
     i.update_attribute :geojson, test_geojson
+    job = GttPrintJob.new issue: i, layout: 'A4 portrait'
 
-    assert r = @mapfish.print_issue(i, 'A4 portrait')
+    assert r = @mapfish.print(job)
     assert r.success?
     assert ref = r.ref
     sleep 3
