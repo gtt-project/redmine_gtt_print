@@ -30,29 +30,39 @@ module RedmineGttPrint
 
     def self.attributes_hash(issue)
       {
-        # initially "title" was part of the print template, but it has been removed.
         id: issue.id,
         subject: issue.subject,
+        project_id: issue.project_id,
+        project_name: "WIP",
+        tracker_id: issue.tracker_id,
+        tracker_name: "WIP",
+        status_id: issue.status_id,
+        status_name: "WIP",
+        priority_id: issue.priority_id,
+        priority_name: "WIP",
+        # category_id: issue.category_id,
+        author_id: issue.author_id,
+        author_name: "WIP",
+        assigned_to_id: issue.assigned_to_id,
+        assigned_to_name: "WIP",
         description: issue.description,
-        project_id: "TBD",
-        project_name: "TBD",
-        tracker_id: "TBD",
-        tracker_name: "TBD",
-        status_id: "TBD",
-        status_name: "TBD",
-        priority_id: "TBD",
-        priority_name: "TBD",
-        author_id: "TBD",
-        author_name: "TBD",
-        assigned_to_id: "TBD",
-        assigned_to_name: "TBD",
         is_private: issue.is_private,
         start_date: issue.start_date,
-        done_date: "TBD",
+        done_date: issue.closed_on,
+        # due_date: issue.due_date,
         estimated_hours: issue.estimated_hours,
-        total_estimated_hours: issue.total_estimated_hours,
+        total_estimated_hours: "WIP",
         created_on: issue.created_on,
         updated_on: issue.updated_on,
+
+        # Experimental
+        # issue: issue,
+        # project: (Project.find issue.project_id),
+        # tracker: (Tracker.find issue.tracker_id),
+        # status: (Status.find issue.status_id),
+        # priority: (Priority.find issue.priority_id),
+        # author: (Author.find issue.author_id),
+        # assigned_to: (Assigned_to.find issue.assigned_to_id),
       }
     end
 
@@ -96,7 +106,7 @@ module RedmineGttPrint
         ],
         scale: 25000,
         projection: "EPSG:3857",
-        dpi: 300
+        dpi: 144
       }
     end
 
