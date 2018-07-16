@@ -4,9 +4,10 @@ module RedmineGttPrint
   # server.
   #
   class IssueToJson
-    def initialize(issue, layout, other_attributes = {})
+    def initialize(issue, layout, other_attributes = {}, custom_fields = {})
       @issue = issue
       @layout = layout
+      @custom_fields = custom_fields
       @other_attributes = other_attributes
     end
 
@@ -15,9 +16,14 @@ module RedmineGttPrint
     end
 
     def call
+      # makes custom fields accessible by name
+      @issue.visible_custom_field_values.each do |cfv|
+        @custom_fields.store(cfv.custom_field.name, cfv)
+      end
+
       json = {
         layout: @layout,
-        attributes: self.class.attributes_hash(@issue, @other_attributes)
+        attributes: self.class.attributes_hash(@issue, @other_attributes, @custom_fields)
       }
 
       if data = @issue.geodata_for_print
@@ -29,7 +35,7 @@ module RedmineGttPrint
 
     # the following static helpers are used by IssuesToJson as well
 
-    def self.attributes_hash(issue, other_attributes)
+    def self.attributes_hash(issue, other_attributes, custom_fields)
       {
         id: issue.id,
         subject: issue.subject,
@@ -56,7 +62,7 @@ module RedmineGttPrint
         updated_on: issue.updated_on,
 
         # Custom text
-        custom_text: other_attributes[:custom_text]
+        custom_text: other_attributes[:custom_text],
 
         # Experimental
         # issue: issue,
@@ -67,14 +73,12 @@ module RedmineGttPrint
         # author: (User.find issue.author_id),
         # assigned_to: (User.find issue.assigned_to_id),
 
-#         custom_fields: issue.visible_custom_field_values.map {|cfv|
-#           {
-#             id: cfv.custom_field.id,
-#             name: cfv.custom_field.name,
-#             multiple: cfv.custom_field.multiple?,
-#             value: cfv.value
-#           }
-#         },
+        cf_通報者: custom_fields["通報者"] ? custom_fields["通報者"].value : "",
+        cf_通報手段: custom_fields["通報手段"] ? custom_fields["通報手段"].value : "",
+        cf_通報者電話番号: custom_fields["通報者電話番号"] ? custom_fields["通報者電話番号"].value : "",
+        cf_通報者メールアドレス: custom_fields["通報者メールアドレス"] ? custom_fields["通報者メールアドレス"].value : "",
+        cf_現地住所: custom_fields["現地住所"] ? custom_fields["現地住所"].value : "",
+
 #         journals: issue.visible_journals_with_index.map{|j|
 #           {
 #             user: { login: j.user&.login, id: j.user&.id, name: j.user&.name },
