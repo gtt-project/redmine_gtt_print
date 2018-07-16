@@ -21,7 +21,8 @@ module RedmineGttPrint
     end
 
     def get_capabilities(print_config)
-      r = HTTParty.get "#{@host}/print/#{print_config}/capabilities.json"
+      str = URI.escape(print_config)
+      r = HTTParty.get "#{@host}/print/#{str}/capabilities.json"
       if r.success?
         JSON.parse r.body
       else
@@ -62,7 +63,8 @@ module RedmineGttPrint
     private
 
     def request_print(json, print_config, format)
-      url = "#{@host}/print/#{print_config}/report.#{format}"
+      str = URI.escape(print_config)
+      url = "#{@host}/print/#{str}/report.#{format}"
       if Rails.env.development?
         (File.open(Rails.root.join("tmp/mapfish.json"), "wb") << json).close
       end
