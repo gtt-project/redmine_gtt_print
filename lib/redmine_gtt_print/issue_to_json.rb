@@ -39,8 +39,6 @@ module RedmineGttPrint
         json[:attributes][:map] = self.class.map_data(data[:center], [data[:geojson]])
       end
 
-      pp json
-
       json.to_json
     end
 
