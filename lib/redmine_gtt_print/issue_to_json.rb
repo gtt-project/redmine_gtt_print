@@ -66,6 +66,40 @@ module RedmineGttPrint
         # priority: (IssuePriority.find issue.priority_id),
         # author: (User.find issue.author_id),
         # assigned_to: (User.find issue.assigned_to_id),
+
+#         custom_fields: issue.visible_custom_field_values.map {|cfv|
+#           {
+#             id: cfv.custom_field.id,
+#             name: cfv.custom_field.name,
+#             multiple: cfv.custom_field.multiple?,
+#             value: cfv.value
+#           }
+#         },
+#         journals: issue.visible_journals_with_index.map{|j|
+#           {
+#             user: { login: j.user&.login, id: j.user&.id, name: j.user&.name },
+#             notes: j.notes,
+#             created_on: j.created_on,
+#             details: j.visible_details.map{|d|
+#               {
+#                 property: d.property,
+#                 name: d.prop_key,
+#                 old_value: d.old_value,
+#                 new_value: d.new_value
+#               }
+#             }
+#           }
+#         },
+#         attachments: issue.attachments.map{|a|
+#           {
+#             id: a.id,
+#             filename: a.filename,
+#             filesize: a.filesize,
+#             content_type: a.content_type,
+#             description: a.description,
+#             content_url: nil, # this is a bit more complex as we do not have access to URL generation methods here.
+#           }
+#         }
       }
     end
 
