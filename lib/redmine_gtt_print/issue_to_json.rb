@@ -4,9 +4,10 @@ module RedmineGttPrint
   # server.
   #
   class IssueToJson
-    def initialize(issue, layout, other_attributes = {}, custom_fields = {})
+    def initialize(issue, layout, other_attributes = {}, custom_fields = {}, attachments = [])
       @issue = issue
       @layout = layout
+      @attachments = attachments
       @custom_fields = custom_fields
       @other_attributes = other_attributes
     end
@@ -21,21 +22,31 @@ module RedmineGttPrint
         @custom_fields.store(cfv.custom_field.name, cfv)
       end
 
+      # collects image attachment URL's
+      @issue.attachments.each do |a|
+        if a.image?
+          # TODO: url construction doesn't look safe
+          @attachments << "#{Setting.protocol}://#{Setting.host_name}/attachments/download/#{a.id}/#{a.filename}"
+        end
+      end
+
       json = {
         layout: @layout,
-        attributes: self.class.attributes_hash(@issue, @other_attributes, @custom_fields)
+        attributes: self.class.attributes_hash(@issue, @other_attributes, @custom_fields, @attachments)
       }
 
       if data = @issue.geodata_for_print
         json[:attributes][:map] = self.class.map_data(data[:center], [data[:geojson]])
       end
 
+      pp json
+
       json.to_json
     end
 
     # the following static helpers are used by IssuesToJson as well
 
-    def self.attributes_hash(issue, other_attributes, custom_fields)
+    def self.attributes_hash(issue, other_attributes, custom_fields, attachments)
       {
         id: issue.id,
         subject: issue.subject,
@@ -65,6 +76,19 @@ module RedmineGttPrint
         # Custom text
         custom_text: other_attributes[:custom_text],
 
+        # Custom fields fbased on names
+        cf_通報者: custom_fields["通報者"] ? custom_fields["通報者"].value : "",
+        cf_通報手段: custom_fields["通報手段"] ? custom_fields["通報手段"].value : "",
+        cf_通報者電話番号: custom_fields["通報者電話番号"] ? custom_fields["通報者電話番号"].value : "",
+        cf_通報者メールアドレス: custom_fields["通報者メールアドレス"] ? custom_fields["通報者メールアドレス"].value : "",
+        cf_現地住所: custom_fields["現地住所"] ? custom_fields["現地住所"].value : "",
+
+        # Image attachments (max. 4 iamges)
+        image_url_1: attachments.at(0) ? attachments.at(0) : "",
+        image_url_2: attachments.at(1) ? attachments.at(1) : "",
+        image_url_3: attachments.at(2) ? attachments.at(2) : "",
+        image_url_4: attachments.at(3) ? attachments.at(3) : "",
+
         # Experimental
         # issue: issue,
         # project: (Project.find issue.project_id),
@@ -73,12 +97,6 @@ module RedmineGttPrint
         # priority: (IssuePriority.find issue.priority_id),
         # author: (User.find issue.author_id),
         # assigned_to: (User.find issue.assigned_to_id),
-
-        cf_通報者: custom_fields["通報者"] ? custom_fields["通報者"].value : "",
-        cf_通報手段: custom_fields["通報手段"] ? custom_fields["通報手段"].value : "",
-        cf_通報者電話番号: custom_fields["通報者電話番号"] ? custom_fields["通報者電話番号"].value : "",
-        cf_通報者メールアドレス: custom_fields["通報者メールアドレス"] ? custom_fields["通報者メールアドレス"].value : "",
-        cf_現地住所: custom_fields["現地住所"] ? custom_fields["現地住所"].value : "",
 
 #         journals: issue.visible_journals_with_index.map{|j|
 #           {
