@@ -21,6 +21,8 @@ module RedmineGttPrint
         @custom_fields.store(cfv.custom_field.name, cfv)
       end
 
+      pp @issue.last_notes
+
       json = {
         layout: @layout,
         attributes: self.class.attributes_hash(@issue, @other_attributes, @custom_fields)
@@ -60,6 +62,7 @@ module RedmineGttPrint
         estimated_hours: issue.estimated_hours,
         created_on: issue.created_on,
         updated_on: issue.updated_on,
+        last_notes: issue.last_notes ? issue.last_notes : "",
 
         # Custom text
         custom_text: other_attributes[:custom_text],
