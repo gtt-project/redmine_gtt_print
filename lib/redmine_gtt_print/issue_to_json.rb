@@ -21,8 +21,6 @@ module RedmineGttPrint
         @custom_fields.store(cfv.custom_field.name, cfv)
       end
 
-      pp @issue.last_notes
-
       json = {
         layout: @layout,
         attributes: self.class.attributes_hash(@issue, @other_attributes, @custom_fields)
