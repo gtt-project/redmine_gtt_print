@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module RedmineGttPrint
 
   # Transforms the given array of issues into JSON ready to be sent to the
@@ -17,10 +19,19 @@ module RedmineGttPrint
     def call
       hsh = {
         layout: @layout,
+        outputFilename: "DailyList",
+        outputFormat: "pdf",
+        custom_text: @other_attributes[:custom_text],
         attributes: {
-          issues: @issues.map{|i|
-            IssueToJson.attributes_hash(i, @other_attributes)
-          }
+          datasource: [
+            {
+              table: {
+                columns: %w( id status start_date created_on assigned_to_name subject ),
+                data: @issues.map{|i| issue_to_data_row i}
+              }
+            }
+
+          ]
         }
       }
 
@@ -34,6 +45,19 @@ module RedmineGttPrint
       end
 
       hsh.to_json
+    end
+
+    private
+
+    def issue_to_data_row(i)
+      [
+        i.id,
+        i.status.name,
+        i.start_date,
+        i.created_on,
+        i.assigned_to&.name,
+        i.subject
+      ]
     end
 
   end
