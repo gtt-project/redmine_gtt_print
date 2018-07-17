@@ -36,6 +36,8 @@ module RedmineGttPrint
         json[:attributes][:map] = self.class.map_data(data[:center], [data[:geojson]])
       end
 
+      pp RedmineGttPrint.layouts_for_tracker(@issue.tracker)[0]
+
       json.to_json
     end
 
@@ -89,10 +91,10 @@ module RedmineGttPrint
         cf_現地住所: custom_fields["現地住所"] || "",
 
         # Image attachments (max. 4 iamges)
-        image_url_1: image_urls[0] || "",
-        image_url_2: image_urls[1] || "",
-        image_url_3: image_urls[2] || "",
-        image_url_4: image_urls[3] || "",
+        image_url_1: image_urls[0] || "../#{RedmineGttPrint.tracker_config(issue.tracker)}/blank.png",
+        image_url_2: image_urls[1] || "../#{RedmineGttPrint.tracker_config(issue.tracker)}/blank.png",
+        image_url_3: image_urls[2] || "../#{RedmineGttPrint.tracker_config(issue.tracker)}/blank.png",
+        image_url_4: image_urls[3] || "../#{RedmineGttPrint.tracker_config(issue.tracker)}/blank.png",
 
         # Experimental
         # issue: issue,
