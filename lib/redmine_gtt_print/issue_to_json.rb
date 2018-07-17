@@ -1,14 +1,14 @@
+# frozen_string_literal: true
+
 module RedmineGttPrint
 
   # Transforms the given issue into JSON ready to be sent to the mapfish print
   # server.
   #
   class IssueToJson
-    def initialize(issue, layout, other_attributes = {}, custom_fields = {}, attachments = [])
+    def initialize(issue, layout, other_attributes = {})
       @issue = issue
       @layout = layout
-      @attachments = attachments
-      @custom_fields = custom_fields
       @other_attributes = other_attributes
     end
 
@@ -17,22 +17,11 @@ module RedmineGttPrint
     end
 
     def call
-      # makes custom fields accessible by name
-      @issue.visible_custom_field_values.each do |cfv|
-        @custom_fields.store(cfv.custom_field.name, cfv)
-      end
-
-      # collects image attachment URL's
-      @issue.attachments.each do |a|
-        if a.image?
-          # TODO: url construction doesn't look safe
-          @attachments << "#{Setting.protocol}://#{Setting.host_name}/attachments/download/#{a.id}/#{a.filename}"
-        end
-      end
-
       json = {
         layout: @layout,
-        attributes: self.class.attributes_hash(@issue, @other_attributes, @custom_fields, @attachments)
+        attributes: self.class.attributes_hash(@issue,
+                                               @other_attributes,
+                                               image_urls(@issue))
       }
 
       if data = @issue.geodata_for_print
@@ -42,25 +31,35 @@ module RedmineGttPrint
       json.to_json
     end
 
+    def image_urls(issue)
+      issue.attachments.map do |a|
+        if a.image?
+          "#{Setting.protocol}://#{Setting.host_name}/attachments/download/#{a.id}/#{a.filename}"
+        end
+      end.compact
+    end
+
     # the following static helpers are used by IssuesToJson as well
 
-    def self.attributes_hash(issue, other_attributes, custom_fields, attachments)
+    def self.attributes_hash(issue, other_attributes, image_urls)
+      custom_fields = issue_custom_fields_by_name issue
+
       {
         id: issue.id,
         subject: issue.subject,
         project_id: issue.project_id,
-        project_name: (Project.find issue.project_id).name,
+        project_name: issue.project.name,
         tracker_id: issue.tracker_id,
-        tracker_name: (Tracker.find issue.tracker_id).name,
+        tracker_name: issue.tracker.name,
         status_id: issue.status_id,
-        status_name: (IssueStatus.find issue.status_id).name,
+        status_name: issue.status.name,
         priority_id: issue.priority_id,
-        priority_name: (IssuePriority.find issue.priority_id).name,
+        priority_name: issue.priority.name,
         # category_id: issue.category_id,
         author_id: issue.author_id,
-        author_name: (User.find issue.author_id).name,
+        author_name: issue.author.name,
         assigned_to_id: issue.assigned_to_id,
-        assigned_to_name: issue.assigned_to_id ? (User.find issue.author_id).name : "WIP",
+        assigned_to_name: issue.assigned_to&.name || "",
         description: issue.description,
         is_private: issue.is_private,
         start_date: issue.start_date,
@@ -69,23 +68,23 @@ module RedmineGttPrint
         estimated_hours: issue.estimated_hours,
         created_on: issue.created_on,
         updated_on: issue.updated_on,
-        last_notes: issue.last_notes ? issue.last_notes : "",
+        last_notes: issue.last_notes || "",
 
         # Custom text
         custom_text: other_attributes[:custom_text],
 
         # Custom fields fbased on names
-        cf_通報者: custom_fields["通報者"] ? custom_fields["通報者"].value : "",
-        cf_通報手段: custom_fields["通報手段"] ? custom_fields["通報手段"].value : "",
-        cf_通報者電話番号: custom_fields["通報者電話番号"] ? custom_fields["通報者電話番号"].value : "",
-        cf_通報者メールアドレス: custom_fields["通報者メールアドレス"] ? custom_fields["通報者メールアドレス"].value : "",
-        cf_現地住所: custom_fields["現地住所"] ? custom_fields["現地住所"].value : "",
+        cf_通報者: custom_fields["通報者"] || "",
+        cf_通報手段: custom_fields["通報手段"] || "",
+        cf_通報者電話番号: custom_fields["通報者電話番号"] || "",
+        cf_通報者メールアドレス: custom_fields["通報者メールアドレス"] || "",
+        cf_現地住所: custom_fields["現地住所"] || "",
 
         # Image attachments (max. 4 iamges)
-        image_url_1: attachments.at(0) ? attachments.at(0) : "",
-        image_url_2: attachments.at(1) ? attachments.at(1) : "",
-        image_url_3: attachments.at(2) ? attachments.at(2) : "",
-        image_url_4: attachments.at(3) ? attachments.at(3) : "",
+        image_url_1: image_urls[0] || "",
+        image_url_2: image_urls[1] || "",
+        image_url_3: image_urls[2] || "",
+        image_url_4: image_urls[3] || "",
 
         # Experimental
         # issue: issue,
@@ -122,6 +121,14 @@ module RedmineGttPrint
 #           }
 #         }
       }
+    end
+
+    def self.issue_custom_fields_by_name(issue)
+      Hash[
+        issue.visible_custom_field_values.map{|cfv|
+          [cfv.custom_field.name, cfv.value]
+        }
+      ]
     end
 
     def self.map_data(center, features)

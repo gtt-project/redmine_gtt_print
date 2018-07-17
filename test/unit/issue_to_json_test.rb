@@ -13,7 +13,9 @@ class IssueToJsonTest < ActiveSupport::TestCase
            :custom_fields,
            :custom_values,
            :custom_fields_trackers,
-           :attachments
+           :attachments,
+           :users,
+           :email_addresses
 
   setup do
     @issue = Issue.find 1
