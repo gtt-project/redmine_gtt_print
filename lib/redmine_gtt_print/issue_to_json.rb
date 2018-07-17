@@ -6,6 +6,14 @@ module RedmineGttPrint
   # server.
   #
   class IssueToJson
+    include Rails.application.routes.url_helpers
+
+    # what works in the mailer is good enough for the image URL generation as
+    # well
+    def default_url_options
+      ::Mailer.default_url_options
+    end
+
     def initialize(issue, layout, other_attributes = {})
       @issue = issue
       @layout = layout
@@ -34,7 +42,7 @@ module RedmineGttPrint
     def image_urls(issue)
       issue.attachments.map do |a|
         if a.image?
-          "#{Setting.protocol}://#{Setting.host_name}/attachments/download/#{a.id}/#{a.filename}"
+          download_named_attachment_url(a, a.filename, key: User.current.api_key)
         end
       end.compact
     end
