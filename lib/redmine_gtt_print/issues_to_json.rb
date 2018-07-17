@@ -37,11 +37,11 @@ module RedmineGttPrint
 
       if (features = @issues.map(&:geodata_for_print).compact).any?
         # TODO determine a proper center for the whole set of features
-        center = features.first[:center]
-        hsh[:attributes][:map] = IssueToJson.map_data(
-          center,
-          features.map{|f| f[:geojson] }
-        )
+        #center = features.first[:center]
+        #hsh[:attributes][:map] = IssueToJson.map_data(
+        #  center,
+        #  features.map{|f| f[:geojson] }
+        #)
       end
 
       hsh.to_json
@@ -51,7 +51,7 @@ module RedmineGttPrint
 
     def issue_to_data_row(i)
       [
-        i.id,
+        i.id.to_s,
         i.status.name,
         i.start_date,
         i.created_on,
