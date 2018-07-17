@@ -36,8 +36,6 @@ module RedmineGttPrint
         json[:attributes][:map] = self.class.map_data(data[:center], [data[:geojson]])
       end
 
-      pp RedmineGttPrint.layouts_for_tracker(@issue.tracker)[0]
-
       json.to_json
     end
 
