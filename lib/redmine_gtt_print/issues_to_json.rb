@@ -21,8 +21,8 @@ module RedmineGttPrint
         layout: @layout,
         outputFilename: "DailyList",
         outputFormat: "pdf",
-        custom_text: @other_attributes[:custom_text],
         attributes: {
+          custom_text: @other_attributes[:custom_text],
           datasource: [
             {
               table: {
@@ -30,7 +30,6 @@ module RedmineGttPrint
                 data: @issues.map{|i| issue_to_data_row i}
               }
             }
-
           ]
         }
       }
