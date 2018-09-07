@@ -15,3 +15,8 @@ var GttPrint = {
     }, 500);
   }
 };
+
+var _submit = function () {
+  $('input[name="gtt_print_job[scale]"]').val(App.getScale());
+  $('input[name="gtt_print_job[basemap_url]"]').val(App.getBasemapUrl());
+}
