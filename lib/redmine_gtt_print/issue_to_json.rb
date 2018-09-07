@@ -33,7 +33,8 @@ module RedmineGttPrint
       }
 
       if data = @issue.geodata_for_print
-        json[:attributes][:map] = self.class.map_data(data[:center], [data[:geojson]])
+        json[:attributes][:map] = self.class.map_data(data[:center], [data[:geojson]],
+          @other_attributes[:scale], @other_attributes[:basemap_url])
       end
 
       context = {
@@ -144,7 +145,7 @@ module RedmineGttPrint
       ]
     end
 
-    def self.map_data(center, features)
+    def self.map_data(center, features, scale, basemap_url)
       {
         center: center,
         rotation: 0,
@@ -182,7 +183,7 @@ module RedmineGttPrint
             type: "osm"
           }
         ],
-        scale: 25000,
+        scale: scale,
         projection: "EPSG:3857",
         dpi: 144
       }

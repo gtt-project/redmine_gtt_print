@@ -45,7 +45,7 @@ class GttPrintJobsController < ApplicationController
   private
 
   def gtt_print_job_params
-    params[:gtt_print_job].permit(:layout, :custom_text)
+    params[:gtt_print_job].permit(:layout, :custom_text, :scale, :basemap_url)
   end
 
   def authorize_create
