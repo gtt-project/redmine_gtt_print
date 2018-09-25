@@ -178,7 +178,7 @@ module RedmineGttPrint
             type: "geojson"
           },
           {
-            baseURL: "https://cyberjapandata.gsi.go.jp/xyz/std",
+            baseURL: basemap_url.sub(/\/{z}\/{x}\/{y}.png/,''),
             imageExtension: "png",
             type: "osm"
           }
