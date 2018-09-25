@@ -14,7 +14,7 @@ class GttPrintJobsController < ApplicationController
     job.issue = @issue
     job.issues = @issues
     if job.valid?
-      @result = RedmineGttPrint.mapfish.print job
+      @result = RedmineGttPrint.mapfish.print job, request.referer, request.user_agent
       render status: (@result&.success? ? :created : 422)
     else
       render status: 422
