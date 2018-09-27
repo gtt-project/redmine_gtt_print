@@ -27,7 +27,12 @@ class IssuesToJsonTest < ActiveSupport::TestCase
     assert table = h['attributes']['datasource'][0]['table']['data']
     assert_equal @issues[0].subject, table[0].last
     assert_equal @issues[1].subject, table[1].last
+  end
 
+  test 'should include map json in attributes' do
+    skip 'removed for now'
+    assert j = RedmineGttPrint::IssuesToJson.(@issues, 'das layout')
+    assert h = JSON.parse(j)
     assert map = h['attributes']['map']
     assert_equal 2, map['center'].size
     assert geo = map['layers'][0]['geoJson']
