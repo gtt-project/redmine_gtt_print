@@ -20,13 +20,14 @@ module RedmineGttPrint
       end
     end
 
+    # returns capabilities document for the given print config,
+    # nil if no print_config is given or no capabilities were found for it.
     def get_capabilities(print_config)
+      return unless print_config
       str = URI.escape(print_config)
       r = HTTParty.get "#{@host}/print/#{str}/capabilities.json"
       if r.success?
-        JSON.parse r.body
-      else
-        :not_found
+        return JSON.parse r.body
       end
     end
 
