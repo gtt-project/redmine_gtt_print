@@ -23,6 +23,10 @@ class MapfishTest < ActionDispatch::IntegrationTest
     assert configs.include?("DEMO_gtt")
   end
 
+  test "should handle nil print config" do
+    assert_nil @mapfish.layouts nil
+  end
+
   test "should have layouts for print config" do
     assert layouts = @mapfish.layouts("DEMO_gtt")
     assert_equal Array, layouts.class
