@@ -43,6 +43,11 @@ module RedmineGttPrint
         #)
       end
 
+      context = {
+        issues: @issues, other_attributes: @other_attributes, json: hsh
+      }
+      Redmine::Hook.call_hook(:redmine_gtt_print_issues_to_json, context)
+
       hsh.to_json
     end
 

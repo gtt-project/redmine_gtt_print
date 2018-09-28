@@ -1,5 +1,14 @@
 require File.expand_path(File.dirname(__FILE__) + '/../../redmine_gtt/test/test_helper')
 
+class TestHookListener < Redmine::Hook::Listener
+  def redmine_gtt_print_issue_to_json(context)
+    context[:json][:issue_to_json_hook] = context[:issue].id
+  end
+  def redmine_gtt_print_issues_to_json(context)
+    context[:json][:issues_to_json_hook] = context[:issues].size
+  end
+end
+
 class TestMapfish
   attr_reader :issue, :layout
   def print_configs
