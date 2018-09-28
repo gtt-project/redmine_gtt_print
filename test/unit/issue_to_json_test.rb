@@ -38,6 +38,12 @@ class IssueToJsonTest < ActiveSupport::TestCase
     assert_equal 15052703.2783315, geom['coordinates'].flatten.first
   end
 
+  test "should call hook" do
+    assert j = RedmineGttPrint::IssueToJson.(@issue, 'das layout')
+    assert h = JSON.parse(j)
+    assert_equal @issue.id, h["issue_to_json_hook"]
+  end
+
   test 'should handle issue without geometry' do
     i = Issue.find(2)
     assert j = RedmineGttPrint::IssueToJson.(i, 'layout')

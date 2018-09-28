@@ -36,6 +36,11 @@ module RedmineGttPrint
         json[:attributes][:map] = self.class.map_data(data[:center], [data[:geojson]])
       end
 
+      context = {
+        issue: @issue, other_attributes: @other_attributes, json: json
+      }
+      Redmine::Hook.call_hook(:redmine_gtt_print_issue_to_json, context)
+
       json.to_json
     end
 

@@ -29,6 +29,12 @@ class IssuesToJsonTest < ActiveSupport::TestCase
     assert_equal @issues[1].subject, table[1].last
   end
 
+  test "should call hook" do
+    assert j = RedmineGttPrint::IssuesToJson.(@issues, 'das layout')
+    assert h = JSON.parse(j)
+    assert_equal @issues.size, h["issues_to_json_hook"]
+  end
+
   test 'should include map json in attributes' do
     skip 'removed for now'
     assert j = RedmineGttPrint::IssuesToJson.(@issues, 'das layout')
