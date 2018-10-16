@@ -32,9 +32,15 @@ module RedmineGttPrint
                                                image_urls(@issue))
       }
 
+      scale = nil
+      basemap_url = nil
+      if !@other_attributes.nil?
+        scale = @other_attributes[:scale]
+        basemap_url = @other_attributes[:basemap_url]
+      end
       if data = @issue.geodata_for_print
         json[:attributes][:map] = self.class.map_data(data[:center], [data[:geojson]],
-          @other_attributes[:scale], @other_attributes[:basemap_url])
+          scale, basemap_url)
       end
 
       context = {
@@ -178,12 +184,12 @@ module RedmineGttPrint
             type: "geojson"
           },
           {
-            baseURL: basemap_url.sub(/\/{z}\/{x}\/{y}.png/,''),
+            baseURL: basemap_url.nil? ? "https://cyberjapandata.gsi.go.jp/xyz/std" : basemap_url.sub(/\/{z}\/{x}\/{y}.png/,''),
             imageExtension: "png",
             type: "osm"
           }
         ],
-        scale: scale,
+        scale: scale.nil? ? 25000 : scale,
         projection: "EPSG:3857",
         dpi: 144
       }
