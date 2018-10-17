@@ -34,7 +34,7 @@ class TestMapfish
     @ready_jobs << name
   end
 
-  def print(job)
+  def print(job, referer = nil, user_agent = nil)
     @issue = job.issue
     @layout = job.layout
 
