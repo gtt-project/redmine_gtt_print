@@ -25,9 +25,18 @@ module RedmineGttPrint
     def get_capabilities(print_config)
       return unless print_config
       str = URI.escape(print_config)
-      r = HTTParty.get "#{@host}/print/#{str}/capabilities.json"
-      if r.success?
-        return JSON.parse r.body
+      begin
+        url = "#{@host}/print/#{str}/capabilities.json"
+        r = HTTParty.get url
+        if r.success?
+          return JSON.parse r.body
+        else
+          Rails.logger.error "failed to get capabilities from #{url} : #{r.code}\n#{r.body}"
+          return nil
+        end
+      rescue HTTParty::Error, StandardError => e
+        Rails.logger.error "failed to get capabilities from #{url}\n#{e}"
+        return nil
       end
     end
 
