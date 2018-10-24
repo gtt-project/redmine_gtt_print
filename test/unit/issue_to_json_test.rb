@@ -19,7 +19,8 @@ class IssueToJsonTest < ActiveSupport::TestCase
 
   setup do
     @issue = Issue.find 1
-    @issue.update_attribute :geojson, test_geojson
+    @issue.update_attributes geojson: test_geojson,
+      custom_field_values: { '1' => 'MySQL' }
   end
 
   test 'should build mapfish json' do
@@ -27,6 +28,7 @@ class IssueToJsonTest < ActiveSupport::TestCase
     assert h = JSON.parse(j)
     assert_equal 'das layout', h['layout']
     assert_equal @issue.subject, h['attributes']['subject']
+    assert_equal 'MySQL', h['attributes']['cf_Database']
     assert map = h['attributes']['map']
     assert_equal 2, map['center'].size
     assert geo = map['layers'][0]['geoJson']

@@ -64,7 +64,9 @@ module RedmineGttPrint
     def self.attributes_hash(issue, other_attributes, image_urls)
       custom_fields = issue_custom_fields_by_name issue
 
-      {
+
+
+      result = {
         id: issue.id,
         subject: issue.subject,
         project_id: issue.project_id,
@@ -92,13 +94,6 @@ module RedmineGttPrint
 
         # Custom text
         custom_text: other_attributes[:custom_text],
-
-        # Custom fields fbased on names
-        cf_通報者: custom_fields["通報者"] || "",
-        cf_通報手段: custom_fields["通報手段"] || "",
-        cf_通報者電話番号: custom_fields["通報者電話番号"] || "",
-        cf_通報者メールアドレス: custom_fields["通報者メールアドレス"] || "",
-        cf_現地住所: custom_fields["現地住所"] || "",
 
         # Image attachments (max. 4 iamges)
         image_url_1: image_urls[0] || "../#{RedmineGttPrint.tracker_config(issue.tracker)}/blank.png",
@@ -141,6 +136,10 @@ module RedmineGttPrint
 #           }
 #         }
       }
+
+      custom_fields.each{|name, value| result["cf_#{name}"] = value || ""}
+
+      result
     end
 
     def self.issue_custom_fields_by_name(issue)
