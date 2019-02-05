@@ -43,7 +43,7 @@ class IssuePrintTest < Redmine::IntegrationTest
     assert_response :success
     assert_select '#gtt_print_job_layout option', text: "A4 portrait"
 
-    xhr :post, "/gtt_print_jobs", { issue_id: @issue.id,
+    post "/gtt_print_jobs", xhr: true, params: { issue_id: @issue.id,
                                     gtt_print_job: { layout: "A4 portrait" } }
     assert_response :created
 
