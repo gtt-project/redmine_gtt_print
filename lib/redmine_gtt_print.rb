@@ -1,4 +1,5 @@
 require 'redmine_gtt_print/view_hooks'
+require 'redmine_gtt_print/mapfish'
 
 module RedmineGttPrint
   def self.setup
