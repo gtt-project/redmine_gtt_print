@@ -79,7 +79,7 @@ module RedmineGttPrint
         priority_name: issue.priority.name,
         # category_id: issue.category_id,
         author_id: issue.author_id,
-        author_name: issue.author.name,
+        author_name: issue.author&.name || "",
         assigned_to_id: issue.assigned_to_id,
         assigned_to_name: issue.assigned_to&.name || "",
         description: issue.description,
