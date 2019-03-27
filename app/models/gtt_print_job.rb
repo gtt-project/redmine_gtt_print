@@ -22,14 +22,6 @@ class GttPrintJob
     end
   end
 
-  def print_config
-    if list?
-      RedmineGttPrint.list_config
-    else
-      RedmineGttPrint.tracker_config(issue.tracker)
-    end
-  end
-
   def format
     "pdf"
   end
