@@ -28,6 +28,7 @@ module RedmineGttPrint
       json = {
         layout: @layout,
         attributes: self.class.attributes_hash(@issue,
+                                               @layout,
                                                @other_attributes,
                                                image_urls(@issue))
       }
@@ -61,7 +62,7 @@ module RedmineGttPrint
 
     # the following static helpers are used by IssuesToJson as well
 
-    def self.attributes_hash(issue, other_attributes, image_urls)
+    def self.attributes_hash(issue, layout, other_attributes, image_urls)
       custom_fields = issue_custom_fields_by_name issue
 
 
@@ -96,10 +97,10 @@ module RedmineGttPrint
         custom_text: other_attributes[:custom_text],
 
         # Image attachments (max. 4 iamges)
-        image_url_1: image_urls[0] || "../#{RedmineGttPrint.tracker_config(issue.tracker)}/blank.png",
-        image_url_2: image_urls[1] || "../#{RedmineGttPrint.tracker_config(issue.tracker)}/blank.png",
-        image_url_3: image_urls[2] || "../#{RedmineGttPrint.tracker_config(issue.tracker)}/blank.png",
-        image_url_4: image_urls[3] || "../#{RedmineGttPrint.tracker_config(issue.tracker)}/blank.png",
+        image_url_1: image_urls[0] || "../#{layout}/blank.png",
+        image_url_2: image_urls[1] || "../#{layout}/blank.png",
+        image_url_3: image_urls[2] || "../#{layout}/blank.png",
+        image_url_4: image_urls[3] || "../#{layout}/blank.png",
 
         # Experimental
         # issue: issue,
