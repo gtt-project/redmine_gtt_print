@@ -15,9 +15,11 @@ module RedmineGttPrint
     end
 
     def layouts(print_config)
-      if caps = get_capabilities(print_config) and layouts = caps['layouts']
-        layouts.map{|l|l['name']}
-      end
+      Array(print_config).map do |cfg|
+        if caps = get_capabilities(cfg) and layouts = caps['layouts']
+          layouts.map{|l|l['name']}
+        end
+      end.compact.flatten
     end
 
     # returns capabilities document for the given print config,
