@@ -1,4 +1,4 @@
-<% if @issue and User.current.allowed_to?(:view_gtt_print, @issue.project) and (layouts = RedmineGttPrint.layouts_for_tracker(@issue.tracker)).present? %>
+<% if @issue and User.current.allowed_to?(:view_gtt_print, @issue.project) and (layouts = RedmineGttPrint.layouts_for_tracker(@issue.tracker)).any? %>
   <h3><%= l :label_gtt_print_title %></h3>
   <%= form_for :gtt_print_job, :html => { :onsubmit => '_submit()' }, url: gtt_print_jobs_path, remote: true do |f| %>
     <%= hidden_field_tag :issue_id, @issue.id %>
@@ -13,7 +13,7 @@
 <% if @issues and
     ( @project && User.current.allowed_to?(:view_gtt_print, @project) or
       User.current.allowed_to?(:view_gtt_print, nil, global: true) ) and
-    (layouts = RedmineGttPrint.list_layouts).present?
+    (layouts = RedmineGttPrint.list_layouts).any?
 %>
 
   <h3><%= l :label_gtt_print_title %></h3>

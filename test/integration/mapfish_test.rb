@@ -24,7 +24,7 @@ class MapfishTest < ActionDispatch::IntegrationTest
   end
 
   test "should handle nil print config" do
-    assert_nil @mapfish.layouts nil
+    assert_equal [], @mapfish.layouts(nil)
   end
 
   test "should have layouts for print config" do
