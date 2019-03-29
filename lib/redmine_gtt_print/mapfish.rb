@@ -43,7 +43,7 @@ module RedmineGttPrint
     end
 
     def print(job, referer = nil, user_agent = nil)
-      if ref = request_print(job.json, job.print_config, job.format, referer, user_agent)
+      if ref = request_print(job.json, job.layout, job.format, referer, user_agent)
         CreateJobResult.new success: true, ref: ref
       else
         CreateJobResult.new
@@ -74,8 +74,8 @@ module RedmineGttPrint
 
     private
 
-    def request_print(json, print_config, format, referer = nil, user_agent = nil)
-      str = URI.escape(print_config)
+    def request_print(json, layout, format, referer = nil, user_agent = nil)
+      str = URI.escape(layout)
       url = "#{@host}/print/#{str}/report.#{format}"
       if Rails.env.development?
         (File.open(Rails.root.join("tmp/mapfish.json"), "wb") << json).close
