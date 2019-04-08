@@ -67,16 +67,10 @@ module RedmineGttPrint
         i.subject
       ]
       @custom_fields_for_all.map{|cf|
-        found = false
-        i.visible_custom_field_values.map{|cfv|
-          if cfv.custom_field.name == cf.name
-            columns.push(cfv.value)
-            found = true
-          end
+        cfv = i.visible_custom_field_values.find{|vcfv|
+            vcfv.custom_field.name == cf.name
         }
-        if not found
-          columns.push("")
-        end
+        cfv.nil? ? columns.push("") : columns.push(cfv.value)
       }
       return columns
     end
