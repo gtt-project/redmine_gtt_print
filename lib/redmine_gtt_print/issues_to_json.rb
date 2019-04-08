@@ -10,6 +10,7 @@ module RedmineGttPrint
       @issues = issues
       @layout = layout
       @other_attributes = other_attributes
+      @custom_fields_for_all = IssueCustomField.where(is_for_all: true).sort
     end
 
     def self.call(*_)
@@ -17,6 +18,8 @@ module RedmineGttPrint
     end
 
     def call
+      columns = ["id", "status", "start_date", "created_on", "assigned_to_name", "subject"]
+      @custom_fields_for_all.map{|cf| columns.push("cf_#{cf.name}")}
       hsh = {
         layout: @layout,
         outputFilename: "DailyList",
@@ -26,7 +29,8 @@ module RedmineGttPrint
           datasource: [
             {
               table: {
-                columns: %w( id status start_date created_on assigned_to_name subject ),
+                #columns: %w( id status start_date created_on assigned_to_name subject ),
+                columns: columns,
                 data: @issues.map{|i| issue_to_data_row i}
               }
             }
@@ -54,7 +58,7 @@ module RedmineGttPrint
     private
 
     def issue_to_data_row(i)
-      [
+      columns = [
         i.id.to_s,
         i.status.name,
         i.start_date,
@@ -62,6 +66,13 @@ module RedmineGttPrint
         i.assigned_to&.name,
         i.subject
       ]
+      @custom_fields_for_all.map{|cf|
+        cfv = i.visible_custom_field_values.find{|vcfv|
+            vcfv.custom_field.name == cf.name
+        }
+        cfv.nil? ? columns.push("") : columns.push(cfv.value)
+      }
+      return columns
     end
 
   end
