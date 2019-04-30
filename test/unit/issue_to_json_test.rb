@@ -51,7 +51,7 @@ class IssueToJsonTest < ActiveSupport::TestCase
     assert j = RedmineGttPrint::IssueToJson.(i, 'layout')
     assert h = JSON.parse(j)
     assert_equal i.subject, h['attributes']['subject']
-    assert h['attributes']['image_url_1'].present?
+    assert h['attributes']['other_image_url_1'].present?
     assert_nil h['attributes']['map']
   end
 
