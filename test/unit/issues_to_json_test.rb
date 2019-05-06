@@ -24,9 +24,10 @@ class IssuesToJsonTest < ActiveSupport::TestCase
     assert j = RedmineGttPrint::IssuesToJson.(@issues, 'das layout')
     assert h = JSON.parse(j)
     assert_equal 'das layout', h['layout']
+    assert subject_index = h['attributes']['datasource'][0]['table']['columns'].index('subject')
     assert table = h['attributes']['datasource'][0]['table']['data']
-    assert_equal @issues[0].subject, table[0].last
-    assert_equal @issues[1].subject, table[1].last
+    assert_equal @issues[0].subject, table[0][subject_index]
+    assert_equal @issues[1].subject, table[1][subject_index]
   end
 
   test "should call hook" do
