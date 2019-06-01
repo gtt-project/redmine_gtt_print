@@ -7,7 +7,13 @@ module RedmineGttPrint
   # server.
   #
   class IssueToJson
-    include Rails.application.routes.url_helpers, ApplicationHelper
+    include Rails.application.routes.url_helpers
+    include ApplicationHelper
+    include CustomFieldsHelper
+    include Redmine::I18n
+
+    @@format_object_func = nil
+    @@format_value_func = nil
 
     # what works in the mailer is good enough for the image URL generation as
     # well
@@ -26,6 +32,9 @@ module RedmineGttPrint
         @attachment_tag_pattern1 = get_attachment_tag_pattern(Setting.plugin_redmine_gtt_custom["attachment_tag_prefixes1"])
         @attachment_tag_pattern2 = get_attachment_tag_pattern(Setting.plugin_redmine_gtt_custom["attachment_tag_prefixes2"])
       end
+
+      @@format_object_func = method(:format_object)
+      @@format_value_func = method(:format_value)
     end
 
     def self.call(*_)
@@ -108,13 +117,13 @@ module RedmineGttPrint
         assigned_to_id: issue.assigned_to_id,
         assigned_to_name: issue.assigned_to&.name || "",
         description: issue.description,
-        is_private: issue.is_private,
-        start_date: issue.start_date,
-        done_date: issue.closed_on,
+        is_private: @@format_object_func.call(issue.is_private, false),
+        start_date: @@format_object_func.call(issue.start_date, false) || "",
+        done_date: @@format_object_func.call(issue.closed_on, false) || "",
         # due_date: issue.due_date,
-        estimated_hours: issue.estimated_hours,
-        created_on: issue.created_on,
-        updated_on: issue.updated_on,
+        estimated_hours: @@format_object_func.call(issue.estimated_hours, false) || "",
+        created_on: @@format_object_func.call(issue.created_on, false) || "",
+        updated_on: @@format_object_func.call(issue.updated_on, false) || "",
         last_notes: issue.last_notes || "",
 
         # Custom text
@@ -178,7 +187,8 @@ module RedmineGttPrint
     def self.issue_custom_fields_by_name(issue)
       Hash[
         issue.visible_custom_field_values.map{|cfv|
-          [cfv.custom_field.name, cfv.value]
+          #puts "#{cfv.custom_field.name}: #{@@format_value_func.call(cfv.value, cfv.custom_field)}"
+          [cfv.custom_field.name, @@format_value_func.call(cfv.value, cfv.custom_field)]
         }
       ]
     end
