@@ -117,6 +117,7 @@ module RedmineGttPrint
         created_on: formatter.created_on || "",
         updated_on: formatter.updated_on || "",
         last_notes: issue.last_notes || "",
+        all_notes: formatter.all_notes || "",
 
         # Custom text
         custom_text: other_attributes[:custom_text],
