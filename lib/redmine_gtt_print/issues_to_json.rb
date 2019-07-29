@@ -18,7 +18,7 @@ module RedmineGttPrint
     end
 
     def call
-      columns = ["id", "status", "start_date", "created_on", "assigned_to_name", "subject"]
+      columns = ["id", "status", "start_date", "created_on", "assigned_to_name", "subject", "description"]
       @custom_fields_for_all.map{|cf| columns.push("cf_#{cf.name}")}
       hsh = {
         layout: @layout,
@@ -29,7 +29,6 @@ module RedmineGttPrint
           datasource: [
             {
               table: {
-                #columns: %w( id status start_date created_on assigned_to_name subject ),
                 columns: columns,
                 data: @issues.map{|i| issue_to_data_row i}
               }
@@ -64,7 +63,8 @@ module RedmineGttPrint
         i.start_date,
         i.created_on,
         i.assigned_to&.name,
-        i.subject
+        i.subject,
+        i.description
       ]
       @custom_fields_for_all.map{|cf|
         cfv = i.visible_custom_field_values.find{|vcfv|
