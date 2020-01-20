@@ -15,6 +15,8 @@ module RedmineGttPrint
   def self.list_layouts
     if cfg = list_config
       mapfish.layouts cfg
+    else
+      []
     end
   end
 
