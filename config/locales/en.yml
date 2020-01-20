@@ -1,5 +1,6 @@
 en:
   field_gtt_print_server: Default print server URL
+  field_gtt_print_default_server_timeout: Default print server timeout
   gtt_print_configurations: Print configurations
   label_gtt_list_config: Issue lists
   label_gtt_no_printing: No printing
