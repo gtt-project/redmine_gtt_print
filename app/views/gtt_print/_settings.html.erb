@@ -2,6 +2,10 @@
   <%= content_tag(:label, l(:field_gtt_print_server)) %>
   <%= text_field_tag 'settings[default_print_server]', @settings['default_print_server'], :size => 50 %>
 </p>
+<p>
+  <%= content_tag(:label, l(:field_gtt_print_default_server_timeout)) %>
+  <%= text_field_tag 'settings[default_print_server_timeout]', @settings['default_print_server_timeout'], :size => 10 %>
+</p>
 </div>
 
 <div class="box tabular settings">
