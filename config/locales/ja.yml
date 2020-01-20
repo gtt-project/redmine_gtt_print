@@ -1,4 +1,5 @@
 ja:
   field_gtt_print_server: デフォルトのプリントサーバーURL
+  field_gtt_print_default_server_timeout: デフォルトのプリントサーバータイムアウト
   label_gtt_print_title: フォーム印刷
   button_gtt_print_submit: 印刷
