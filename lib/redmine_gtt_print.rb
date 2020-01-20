@@ -28,7 +28,7 @@ module RedmineGttPrint
 
   def self.mapfish
     RequestStore.store[:mapfish] ||=
-      RedmineGttPrint::Mapfish.new(host: settings['default_print_server'])
+      RedmineGttPrint::Mapfish.new(host: settings['default_print_server'], timeout: settings['default_print_server_timeout'])
   end
 
 
