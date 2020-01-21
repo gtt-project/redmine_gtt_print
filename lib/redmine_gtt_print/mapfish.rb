@@ -6,8 +6,9 @@ module RedmineGttPrint
     CreateJobResult = ImmutableStruct.new(:success?, :ref)
     PrintResult = ImmutableStruct.new(:pdf, :error)
 
-    def initialize(host:)
+    def initialize(host:, timeout: nil)
       @host = host
+      @timeout = timeout
     end
 
     def print_configs
@@ -29,7 +30,7 @@ module RedmineGttPrint
       str = URI.escape(print_config)
       begin
         url = "#{@host}/print/#{str}/capabilities.json"
-        r = HTTParty.get url
+        r = HTTParty.get url, timeout: @timeout
         if r.success?
           return JSON.parse r.body
         else
@@ -52,7 +53,7 @@ module RedmineGttPrint
 
     # {"done"=>true, "status"=>"finished", "elapsedTime"=>6588, "waitingTime"=>0, "downloadURL"=>"/mapfish/print/report/a790a8e0-d2b9-4f27-8a83-d58a70b66568@36419944-3e1d-4b17-9aab-f56aec338242"}
     def get_status(ref)
-      r = HTTParty.get "#{@host}/print/status/#{ref}.json"
+      r = HTTParty.get "#{@host}/print/status/#{ref}.json", timeout: @timeout
       if r.success?
         json = JSON.parse r.body
         json['done'] ? :done : :running
@@ -63,7 +64,7 @@ module RedmineGttPrint
 
     def get_print(ref)
       url = "#{@host}/print/report/#{ref}"
-      r = HTTParty.get url
+      r = HTTParty.get url, timeout: @timeout
       if r.success?
         PrintResult.new pdf: r.body
       else
@@ -89,7 +90,7 @@ module RedmineGttPrint
       if !user_agent.nil?
         headers['User-Agent'] = user_agent
       end
-      r = HTTParty.post url, body: json, headers: headers
+      r = HTTParty.post url, body: json, headers: headers, timeout: @timeout
       if r.success?
         json = JSON.parse r.body
         json['ref']
@@ -100,14 +101,18 @@ module RedmineGttPrint
     end
 
     def find_print_configs
-      r = HTTParty.get "#{@host}/print/apps.json"
-      if r.success?
-        JSON.parse r.body
-      else
-        Rails.logger.error "failed to fetch print configs: #{r.code}"
+      begin
+        r = HTTParty.get "#{@host}/print/apps.json", timeout: @timeout
+        if r.success?
+          JSON.parse r.body
+        else
+          Rails.logger.error "failed to fetch print configs: #{r.code}"
+          []
+        end
+      rescue HTTParty::Error, StandardError => e
+        Rails.logger.error "failed to connect to print server "
         []
       end
     end
-
   end
 end

@@ -15,6 +15,8 @@ module RedmineGttPrint
   def self.list_layouts
     if cfg = list_config
       mapfish.layouts cfg
+    else
+      []
     end
   end
 
@@ -28,7 +30,7 @@ module RedmineGttPrint
 
   def self.mapfish
     RequestStore.store[:mapfish] ||=
-      RedmineGttPrint::Mapfish.new(host: settings['default_print_server'])
+      RedmineGttPrint::Mapfish.new(host: settings['default_print_server'], timeout: settings['default_print_server_timeout'])
   end
 
 
