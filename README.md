@@ -1,15 +1,13 @@
 # Redmine GTT Print Plugin
 
+![CI #develop](https://github.com/gtt-project/redmine_gtt_print/workflows/Test%20with%20Redmine/badge.svg)
+
 The Geo-Task-Tracker (GTT) print plugin adds printing support issues:
 
 - Supports [Mapfish Print](https://github.com/mapfish/mapfish-print) 
 - Complex print layouts with Jasper Reports
 - Prints map layers and images (issue attachments)
 - and more ...
-
-## Project health
-
-![CI #develop](https://github.com/gtt-project/redmine_gtt_print/workflows/Test%20with%20Redmine/badge.svg)
 
 ## Requirements
 
