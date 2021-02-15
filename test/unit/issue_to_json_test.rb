@@ -37,7 +37,7 @@ class IssueToJsonTest < ActiveSupport::TestCase
     assert_equal 'Feature', feature['type']
     assert geom = feature['geometry']
     assert_equal 'Polygon', geom['type']
-    assert_equal 15052703.2783315, geom['coordinates'].flatten.first
+    assert_equal 15052703.278285623, geom['coordinates'].flatten.first
   end
 
   test "should call hook" do
