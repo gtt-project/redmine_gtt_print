@@ -20,13 +20,6 @@ module RedmineGttPrint
       @issue = issue
       @layout = layout
       @other_attributes = other_attributes
-
-      @attachment_tag_pattern1 = nil
-      @attachment_tag_pattern2 = nil
-      if Redmine::Plugin.installed?(:redmine_gtt_custom)
-        @attachment_tag_pattern1 = get_attachment_tag_pattern(Setting.plugin_redmine_gtt_custom["attachment_tag_prefixes1"])
-        @attachment_tag_pattern2 = get_attachment_tag_pattern(Setting.plugin_redmine_gtt_custom["attachment_tag_prefixes2"])
-      end
     end
 
     def self.call(*_)
@@ -62,27 +55,13 @@ module RedmineGttPrint
     end
 
     def image_urls(issue)
-      before_image_urls = []
-      after_image_urls = []
-      other_image_urls = []
+      image_urls = []
       issue.attachments.map do |a|
         if a.image?
-          if a.description.nil? or (@attachment_tag_pattern1.nil? and @attachment_tag_pattern2.nil?)
-            other_image_urls.push(download_named_attachment_url(a, a.filename, key: User.current.api_key))
-          elsif a.description.match(@attachment_tag_pattern1)
-            before_image_urls.push(download_named_attachment_url(a, a.filename, key: User.current.api_key))
-          elsif a.description.match(@attachment_tag_pattern2)
-            after_image_urls.push(download_named_attachment_url(a, a.filename, key: User.current.api_key))
-          else
-            other_image_urls.push(download_named_attachment_url(a, a.filename, key: User.current.api_key))
-          end
+          image_urls.push(download_named_attachment_url(a, a.filename, key: User.current.api_key))
         end
       end
-      return {
-        "before" => before_image_urls,
-        "after" => after_image_urls,
-        "other" => other_image_urls
-      }
+      return image_urls
     end
 
     # the following static helpers are used by IssuesToJson as well
@@ -122,19 +101,11 @@ module RedmineGttPrint
         # Custom text
         custom_text: other_attributes[:custom_text],
 
-        # Image attachments (max. 4 iamges for each tags)
-        before_image_url_1: image_urls["before"][0] || "../#{layout}/blank.png",
-        before_image_url_2: image_urls["before"][1] || "../#{layout}/blank.png",
-        before_image_url_3: image_urls["before"][2] || "../#{layout}/blank.png",
-        before_image_url_4: image_urls["before"][3] || "../#{layout}/blank.png",
-        after_image_url_1: image_urls["after"][0] || "../#{layout}/blank.png",
-        after_image_url_2: image_urls["after"][1] || "../#{layout}/blank.png",
-        after_image_url_3: image_urls["after"][2] || "../#{layout}/blank.png",
-        after_image_url_4: image_urls["after"][3] || "../#{layout}/blank.png",
-        other_image_url_1: image_urls["other"][0] || "../#{layout}/blank.png",
-        other_image_url_2: image_urls["other"][1] || "../#{layout}/blank.png",
-        other_image_url_3: image_urls["other"][2] || "../#{layout}/blank.png",
-        other_image_url_4: image_urls["other"][3] || "../#{layout}/blank.png",
+        # Image attachments (max. 4 iamges)
+        image_url_1: image_urls[0] || "../#{layout}/blank.png",
+        image_url_2: image_urls[1] || "../#{layout}/blank.png",
+        image_url_3: image_urls[2] || "../#{layout}/blank.png",
+        image_url_4: image_urls[3] || "../#{layout}/blank.png",
 
         # Experimental
         # issue: issue,
