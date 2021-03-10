@@ -1,7 +1,7 @@
 version: '3.4'
 
 services:
-  mapfish_print:
+  mapfish-print:
     image: camptocamp/mapfish_print:3.27
     ports:
       - 8080:8080
@@ -11,4 +11,4 @@ services:
       - ./print-apps:/usr/local/tomcat/webapps/ROOT/print-apps
 
 volumes:
-  mapfish_print:
+  mapfish-print:
