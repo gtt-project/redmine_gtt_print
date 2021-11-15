@@ -20,13 +20,6 @@ module RedmineGttPrint
       @issue = issue
       @layout = layout
       @other_attributes = other_attributes
-
-      @attachment_tag_pattern1 = nil
-      @attachment_tag_pattern2 = nil
-      if Redmine::Plugin.installed?(:redmine_gtt_custom)
-        @attachment_tag_pattern1 = get_attachment_tag_pattern(Setting.plugin_redmine_gtt_custom["attachment_tag_prefixes1"])
-        @attachment_tag_pattern2 = get_attachment_tag_pattern(Setting.plugin_redmine_gtt_custom["attachment_tag_prefixes2"])
-      end
     end
 
     def self.call(*_)
@@ -67,11 +60,11 @@ module RedmineGttPrint
       other_image_urls = []
       issue.attachments.map do |a|
         if a.image?
-          if a.description.nil? or (@attachment_tag_pattern1.nil? and @attachment_tag_pattern2.nil?)
+          if a.attachment_category.nil?
             other_image_urls.push(download_named_attachment_url(a, a.filename, key: User.current.api_key))
-          elsif a.description.match(@attachment_tag_pattern1)
+          elsif a.attachment_category.id == 1
             before_image_urls.push(download_named_attachment_url(a, a.filename, key: User.current.api_key))
-          elsif a.description.match(@attachment_tag_pattern2)
+          elsif a.attachment_category.id == 2
             after_image_urls.push(download_named_attachment_url(a, a.filename, key: User.current.api_key))
           else
             other_image_urls.push(download_named_attachment_url(a, a.filename, key: User.current.api_key))
