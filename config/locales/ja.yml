@@ -1,5 +1,11 @@
 ja:
   field_gtt_print_server: デフォルトのプリントサーバーURL
   field_gtt_print_default_server_timeout: デフォルトのプリントサーバータイムアウト
+  gtt_print_configurations: 印刷設定
+  label_gtt_list_config: チケットのリスト
+  label_gtt_no_printing: (印刷なし)
   label_gtt_print_title: フォーム印刷
+  label_gtt_print_failed: 印刷に失敗しました
   button_gtt_print_submit: 印刷
+  permission_view_gtt_print: "フォーム印刷の閲覧"
+  project_module_gtt_print: "GTTフォーム印刷"

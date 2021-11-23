@@ -7,3 +7,5 @@ en:
   label_gtt_print_title: Template Print
   label_gtt_print_failed: Printing failed
   button_gtt_print_submit: Print
+  permission_view_gtt_smash: "View GTT print"
+  project_module_gtt_smash: "GTT print"
