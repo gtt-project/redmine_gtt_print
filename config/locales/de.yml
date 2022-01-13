@@ -1,1 +1,10 @@
-{}
+gtt_print_configurations: Druck-Konfigurationen
+label_gtt_list_config: Liste der Tickets
+label_gtt_no_printing: Kein Drucken
+label_gtt_print_title: Vorlagen Druck
+label_gtt_print_failed: Drucken ist fehlgeschlagen
+button_gtt_print_submit: Drucken
+permission_view_gtt_smash: GTT print ansehen
+project_module_gtt_smash: GTT print
+field_gtt_print_server: Standard-URL des Druckservers
+field_gtt_print_default_server_timeout: Standard-Timeout des Druckservers
