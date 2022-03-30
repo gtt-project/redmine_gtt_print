@@ -1,7 +1,11 @@
 ja:
-  field_gtt_print_server: デフォルトのプリントサーバーURL
-  field_gtt_print_default_server_timeout: デフォルトのプリントサーバータイムアウト
-  gtt_print_configurations: 印刷設定
+  gtt_print_server_config: 印刷サーバー設定
+  field_gtt_print_server: デフォルトの印刷サーバーURL
+  field_gtt_print_default_server_timeout: デフォルトの印刷サーバータイムアウト
+  gtt_print_attachment_tag_config: 印刷添付ファイルタグ設定
+  label_attachment_tag_before: 対応前タグ
+  label_attachment_tag_after: 対応後タグ
+  gtt_print_templates_config: 印刷テンプレート設定
   label_gtt_list_config: チケットのリスト
   label_gtt_no_printing: (印刷なし)
   label_gtt_print_title: フォーム印刷

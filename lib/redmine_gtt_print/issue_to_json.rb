@@ -71,9 +71,9 @@ module RedmineGttPrint
           if a.image?
             if a.attachment_category.nil?
               other_image_urls.push(download_named_attachment_url(a, a.filename, key: User.current.api_key))
-            elsif a.attachment_category.id == 1
+            elsif a.attachment_category.id == Setting.plugin_redmine_gtt_print['attachment_tag_before'].to_i
               before_image_urls.push(download_named_attachment_url(a, a.filename, key: User.current.api_key))
-            elsif a.attachment_category.id == 2
+            elsif a.attachment_category.id == Setting.plugin_redmine_gtt_print['attachment_tag_after'].to_i
               after_image_urls.push(download_named_attachment_url(a, a.filename, key: User.current.api_key))
             else
               other_image_urls.push(download_named_attachment_url(a, a.filename, key: User.current.api_key))

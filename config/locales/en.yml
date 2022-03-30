@@ -1,7 +1,11 @@
 en:
+  gtt_print_server_config: Print server configuration
   field_gtt_print_server: Default print server URL
   field_gtt_print_default_server_timeout: Default print server timeout
-  gtt_print_configurations: Print configurations
+  gtt_print_attachment_tag_config: Print attachment tag configuration
+  label_attachment_tag_before: Before tag
+  label_attachment_tag_after: After tag
+  gtt_print_templates_config: Print template configuration
   label_gtt_list_config: Issue lists
   label_gtt_no_printing: No printing
   label_gtt_print_title: Template Print

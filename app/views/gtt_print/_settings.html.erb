@@ -1,3 +1,5 @@
+<h3><%= l(:gtt_print_server_config) %></h3>
+
 <p>
   <%= content_tag(:label, l(:field_gtt_print_server)) %>
   <%= text_field_tag 'settings[default_print_server]', @settings['default_print_server'], :size => 50 %>
@@ -8,11 +10,29 @@
 </p>
 </div>
 
+<% if Redmine::Plugin.installed?(:redmine_attachment_categories) %>
+  <%- attachment_categories = AttachmentCategory.all.collect { |p| [p.name, p.id]} %>
+  <div class="box tabular settings">
+
+  <h3><%= l(:gtt_print_attachment_tag_config) %></h3>
+  <p>
+    <%= content_tag(:label, l(:label_attachment_tag_before)) %>
+    <%= select_tag("settings[attachment_tag_before]",
+                   options_for_select(attachment_categories, @settings['attachment_tag_before'])) %>
+  </p>
+  <p>
+    <%= content_tag(:label, l(:label_attachment_tag_after)) %>
+    <%= select_tag("settings[attachment_tag_after]",
+                   options_for_select(attachment_categories, @settings['attachment_tag_after'])) %>
+  </p>
+  </div>
+<% end %>
+
 <div class="box tabular settings">
 
-<h3><%= l(:gtt_print_configurations) %></h3>
+<h3><%= l(:gtt_print_templates_config) %></h3>
 
-<% Tracker.all.each do |t| %>
+<% Tracker.sorted.each do |t| %>
   <p>
     <%= content_tag :label, t.name %>
     <%= select_tag "settings[tracker_config][#{t.id}]",
