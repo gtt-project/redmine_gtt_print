@@ -51,7 +51,11 @@ class IssueToJsonTest < ActiveSupport::TestCase
     assert j = RedmineGttPrint::IssueToJson.(i, 'layout')
     assert h = JSON.parse(j)
     assert_equal i.subject, h['attributes']['subject']
-    assert h['attributes']['other_image_url_1'].present?
+    if !Redmine::Plugin.installed?(:redmine_attachment_categories)
+      assert h['attributes']['image_url_1'].present?
+    else
+      assert h['attributes']['other_image_url_1'].present?
+    end
     assert_nil h['attributes']['map']
   end
 
