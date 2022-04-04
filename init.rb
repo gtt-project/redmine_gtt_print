@@ -5,12 +5,12 @@ Rails.configuration.to_prepare do
 end
 
 Redmine::Plugin.register :redmine_gtt_print do
-  name 'Redmine GTT Print Plugin'
+  name 'Redmine GTT Print plugin'
   author 'Georepublic'
   author_url 'https://github.com/georepublic'
   url 'https://github.com/gtt-project/redmine_gtt_print'
   description 'Adds advanced printing capabilities for GTT reports'
-  version '0.1.0'
+  version '1.1.0'
 
   requires_redmine version_or_higher: '4.0.0'
 
