@@ -55,13 +55,37 @@ module RedmineGttPrint
     end
 
     def image_urls(issue)
-      image_urls = []
-      issue.attachments.map do |a|
-        if a.image?
-          image_urls.push(download_named_attachment_url(a, a.filename, key: User.current.api_key))
+      if !Redmine::Plugin.installed?(:redmine_attachment_categories)
+        default_image_urls = []
+        issue.attachments.map do |a|
+          default_image_urls.push(download_named_attachment_url(a, a.filename, key: User.current.api_key))
         end
+        return {
+          "default" => default_image_urls
+        }
+      else
+        before_image_urls = []
+        after_image_urls = []
+        other_image_urls = []
+        issue.attachments.map do |a|
+          if a.image?
+            if a.attachment_category.nil?
+              other_image_urls.push(download_named_attachment_url(a, a.filename, key: User.current.api_key))
+            elsif a.attachment_category.id == Setting.plugin_redmine_gtt_print['attachment_tag_before'].to_i
+              before_image_urls.push(download_named_attachment_url(a, a.filename, key: User.current.api_key))
+            elsif a.attachment_category.id == Setting.plugin_redmine_gtt_print['attachment_tag_after'].to_i
+              after_image_urls.push(download_named_attachment_url(a, a.filename, key: User.current.api_key))
+            else
+              other_image_urls.push(download_named_attachment_url(a, a.filename, key: User.current.api_key))
+            end
+          end
+        end
+        return {
+          "before" => before_image_urls,
+          "after" => after_image_urls,
+          "other" => other_image_urls
+        }
       end
-      return image_urls
     end
 
     # the following static helpers are used by IssuesToJson as well
@@ -101,12 +125,6 @@ module RedmineGttPrint
         # Custom text
         custom_text: other_attributes[:custom_text],
 
-        # Image attachments (max. 4 iamges)
-        image_url_1: image_urls[0] || "../#{layout}/blank.png",
-        image_url_2: image_urls[1] || "../#{layout}/blank.png",
-        image_url_3: image_urls[2] || "../#{layout}/blank.png",
-        image_url_4: image_urls[3] || "../#{layout}/blank.png",
-
         # Experimental
         # issue: issue,
         # project: (Project.find issue.project_id),
@@ -142,6 +160,27 @@ module RedmineGttPrint
 #           }
 #         }
       }
+
+      # Image attachments (max. 4 iamges for each tags)
+      if !Redmine::Plugin.installed?(:redmine_attachment_categories)
+        result["image_url_1"] = image_urls["default"][0] || "../#{layout}/blank.png"
+        result["image_url_2"] = image_urls["default"][1] || "../#{layout}/blank.png"
+        result["image_url_3"] = image_urls["default"][2] || "../#{layout}/blank.png"
+        result["image_url_4"] = image_urls["default"][3] || "../#{layout}/blank.png"
+      else
+        result["before_image_url_1"] = image_urls["before"][0] || "../#{layout}/blank.png"
+        result["before_image_url_2"] = image_urls["before"][1] || "../#{layout}/blank.png"
+        result["before_image_url_3"] = image_urls["before"][2] || "../#{layout}/blank.png"
+        result["before_image_url_4"] = image_urls["before"][3] || "../#{layout}/blank.png"
+        result["after_image_url_1"] = image_urls["after"][0] || "../#{layout}/blank.png"
+        result["after_image_url_2"] = image_urls["after"][1] || "../#{layout}/blank.png"
+        result["after_image_url_3"] = image_urls["after"][2] || "../#{layout}/blank.png"
+        result["after_image_url_4"] = image_urls["after"][3] || "../#{layout}/blank.png"
+        result["other_image_url_1"] = image_urls["other"][0] || "../#{layout}/blank.png"
+        result["other_image_url_2"] = image_urls["other"][1] || "../#{layout}/blank.png"
+        result["other_image_url_3"] = image_urls["other"][2] || "../#{layout}/blank.png"
+        result["other_image_url_4"] = image_urls["other"][3] || "../#{layout}/blank.png"
+      end
 
       custom_fields.each{|name, value| result["cf_#{name}"] = value || ""}
 
