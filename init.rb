@@ -5,6 +5,7 @@ if Rails.version > '6.0' && Rails.autoloaders.zeitwerk_enabled?
     RedmineGttPrint.setup
   end
 else
+  require 'redmine_gtt_print'
   Rails.configuration.to_prepare do
     RedmineGttPrint.setup
   end
