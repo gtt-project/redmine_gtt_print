@@ -17,9 +17,9 @@ Redmine::Plugin.register :redmine_gtt_print do
   author_url 'https://github.com/georepublic'
   url 'https://github.com/gtt-project/redmine_gtt_print'
   description 'Adds advanced printing capabilities for GTT reports'
-  version '1.1.0'
+  version '1.2.0'
 
-  requires_redmine version_or_higher: '4.0.0'
+  requires_redmine version_or_higher: '4.2.0'
 
   settings(
     default: {
