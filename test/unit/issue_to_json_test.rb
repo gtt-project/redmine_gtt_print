@@ -19,7 +19,7 @@ class IssueToJsonTest < ActiveSupport::TestCase
 
   setup do
     @issue = Issue.find 1
-    @issue.update_attributes geojson: test_geojson,
+    @issue.update geojson: test_geojson,
       custom_field_values: { '1' => 'MySQL' }
   end
 

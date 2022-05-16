@@ -1,7 +1,14 @@
-require 'redmine'
+require File.expand_path('../lib/redmine_gtt_print/view_hooks', __FILE__)
 
-Rails.configuration.to_prepare do
-  RedmineGttPrint.setup
+if Rails.version > '6.0' && Rails.autoloaders.zeitwerk_enabled?
+  Rails.application.config.after_initialize do
+    RedmineGttPrint.setup
+  end
+else
+  require 'redmine_gtt_print'
+  Rails.configuration.to_prepare do
+    RedmineGttPrint.setup
+  end
 end
 
 Redmine::Plugin.register :redmine_gtt_print do
@@ -10,9 +17,9 @@ Redmine::Plugin.register :redmine_gtt_print do
   author_url 'https://github.com/georepublic'
   url 'https://github.com/gtt-project/redmine_gtt_print'
   description 'Adds advanced printing capabilities for GTT reports'
-  version '1.1.0'
+  version '1.2.0'
 
-  requires_redmine version_or_higher: '4.0.0'
+  requires_redmine version_or_higher: '4.2.0'
 
   settings(
     default: {
