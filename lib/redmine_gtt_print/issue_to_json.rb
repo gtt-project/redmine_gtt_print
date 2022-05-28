@@ -22,8 +22,8 @@ module RedmineGttPrint
       @other_attributes = other_attributes
     end
 
-    def self.call(*_)
-      new(*_).call
+    def self.call(*args, **kwargs)
+      new(*args, **kwargs).call
     end
 
     def call
