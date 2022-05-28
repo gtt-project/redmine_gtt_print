@@ -27,7 +27,7 @@ module RedmineGttPrint
     # nil if no print_config is given or no capabilities were found for it.
     def get_capabilities(print_config)
       return unless print_config
-      str = URI.escape(print_config)
+      str = URI.encode_www_form_component(print_config)
       begin
         url = "#{@host}/print/#{str}/capabilities.json"
         r = HTTParty.get url, timeout: @timeout
@@ -76,7 +76,7 @@ module RedmineGttPrint
     private
 
     def request_print(json, layout, format, referer = nil, user_agent = nil)
-      str = URI.escape(layout)
+      str = URI.encode_www_form_component(layout)
       url = "#{@host}/print/#{str}/report.#{format}"
       if Rails.env.development?
         (File.open(Rails.root.join("tmp/mapfish.json"), "wb") << json).close
