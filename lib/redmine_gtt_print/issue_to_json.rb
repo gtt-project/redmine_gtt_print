@@ -113,6 +113,7 @@ module RedmineGttPrint
         assigned_to_name: issue.assigned_to&.name || "",
         description: issue.description,
         is_private: formatter.is_private,
+        is_public: formatter.is_public,
         start_date: formatter.start_date || "",
         done_date: formatter.closed_on || "",
         # due_date: issue.due_date,
