@@ -7,4 +7,5 @@ ja:
   label_gtt_print_title: フォーム印刷
   label_gtt_print_failed: 印刷に失敗しました
   button_gtt_print_submit: 印刷
-  project_module_gtt_print: "GTTフォーム印刷"
+  project_module_gtt_smash: GTT 印刷
+  permission_view_gtt_smash: GTT 印刷の閲覧
