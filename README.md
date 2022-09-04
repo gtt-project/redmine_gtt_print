@@ -4,7 +4,7 @@
 
 The Geo-Task-Tracker (GTT) print plugin adds printing support issues:
 
-- Supports [Mapfish Print](https://github.com/mapfish/mapfish-print) 
+- Supports [Mapfish Print](https://github.com/mapfish/mapfish-print)
 - Complex print layouts with Jasper Reports
 - Prints map layers and images (issue attachments)
 - and more ...
@@ -22,21 +22,21 @@ It also requires an installation of [Mapfish Print](https://github.com/mapfish/m
 
 To install Redmine GTT Print plugin, download or clone this repository in your Redmine installation plugins directory!
 
-```
+```sh
 cd path/to/plugin/directory
 git clone https://github.com/gtt-project/redmine_gtt_print.git
 ```
 
 Then run
 
-```
+```sh
 bundle install
 bundle exec rake redmine:plugins:migrate
 ```
 
 After restarting Redmine, you should be able to see the Redmine GTT plugin in the Plugins page.
 
-More information on installing (and uninstalling) Redmine plugins can be found here: http://www.redmine.org/wiki/redmine/Plugins
+More information on installing (and uninstalling) Redmine plugins can be found in the [Redmine Plugin](http://www.redmine.org/wiki/redmine/Plugins) documentation.
 
 ## How to use
 
@@ -61,4 +61,3 @@ See [all releases](https://github.com/gtt-project/redmine_gtt_print/releases) wi
 ## LICENSE
 
 This program is free software. See [LICENSE](LICENSE) for more information.
-
