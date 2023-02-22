@@ -12,6 +12,10 @@ module RedmineGttPrint
       format_object @issue.is_private, false
     end
 
+    def is_public
+      format_object !@issue.is_private, false
+    end
+
     def start_date
       format_object @issue.start_date, false
     end
