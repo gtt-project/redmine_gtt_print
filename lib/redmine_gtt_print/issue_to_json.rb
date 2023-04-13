@@ -32,7 +32,8 @@ module RedmineGttPrint
         attributes: self.class.attributes_hash(@issue,
                                                @layout,
                                                @other_attributes,
-                                               image_urls(@issue))
+                                               attachments_datasource(@issue.attachments),
+                                               image_urls(@issue.attachments))
       }
 
       scale = nil
@@ -60,10 +61,66 @@ module RedmineGttPrint
       json.to_json
     end
 
-    def image_urls(issue)
+    def attachments_datasource(attachments)
+      return {
+        title: "attachments",
+        table: {
+          columns: attachment_columns,
+          data: attachments.map {|a| attachment_to_data_row a}
+        }
+      }
+    end
+
+    def attachment_columns
+      columns = [
+        "id",
+        "filename",
+        "filesize",
+        "content_type",
+        "description",
+        "content_url",
+        "thumbnail_url",
+        "author_id",
+        "author_name",
+        "created_on"
+      ]
+      if Redmine::Plugin.installed?(:redmine_attachment_categories)
+        columns.push(
+          "attachment_category_id",
+          "attachment_category_name",
+          "attachment_category_html_color"
+        )
+      end
+      return columns
+    end
+
+    def attachment_to_data_row(attachment)
+      data_row = [
+        attachment.id,
+        attachment.filename,
+        attachment.filesize,
+        attachment.content_type,
+        attachment.description,
+        download_named_attachment_url(attachment, attachment.filename, key: User.current.api_key),
+        attachment.thumbnailable? ? thumbnail_url(attachment) : nil,
+        attachment.author&.id,
+        attachment.author&.name,
+        attachment.created_on
+      ]
+      if Redmine::Plugin.installed?(:redmine_attachment_categories)
+        data_row.push(
+          attachment.attachment_category&.id,
+          attachment.attachment_category&.name,
+          attachment.attachment_category&.html_color
+        )
+      end
+      return data_row
+    end
+
+    def image_urls(attachments)
       if !Redmine::Plugin.installed?(:redmine_attachment_categories)
         default_image_urls = []
-        issue.attachments.map do |a|
+        attachments.map do |a|
           default_image_urls.push(download_named_attachment_url(a, a.filename, key: User.current.api_key))
         end
         return {
@@ -73,7 +130,7 @@ module RedmineGttPrint
         before_image_urls = []
         after_image_urls = []
         other_image_urls = []
-        issue.attachments.map do |a|
+        attachments.map do |a|
           if a.image?
             if a.attachment_category.nil?
               other_image_urls.push(download_named_attachment_url(a, a.filename, key: User.current.api_key))
@@ -96,7 +153,7 @@ module RedmineGttPrint
 
     # the following static helpers are used by IssuesToJson as well
 
-    def self.attributes_hash(issue, layout, other_attributes, image_urls)
+    def self.attributes_hash(issue, layout, other_attributes, attachments_datasource, image_urls)
       custom_fields = issue_custom_fields_by_name issue
 
       formatter = IssueFormatter.new(issue)
@@ -133,14 +190,6 @@ module RedmineGttPrint
         custom_text: other_attributes[:custom_text],
 
         # Experimental
-        # issue: issue,
-        # project: (Project.find issue.project_id),
-        # tracker: (Tracker.find issue.tracker_id),
-        # status: (IssueStatus.find issue.status_id),
-        # priority: (IssuePriority.find issue.priority_id),
-        # author: (User.find issue.author_id),
-        # assigned_to: (User.find issue.assigned_to_id),
-
 #         journals: issue.visible_journals_with_index.map{|j|
 #           {
 #             user: { login: j.user&.login, id: j.user&.id, name: j.user&.name },
@@ -156,16 +205,10 @@ module RedmineGttPrint
 #             }
 #           }
 #         },
-#         attachments: issue.attachments.map{|a|
-#           {
-#             id: a.id,
-#             filename: a.filename,
-#             filesize: a.filesize,
-#             content_type: a.content_type,
-#             description: a.description,
-#             content_url: nil, # this is a bit more complex as we do not have access to URL generation methods here.
-#           }
-#         }
+
+        datasource: [
+          attachments_datasource
+        ]
       }
 
       # Image attachments (max. 4 iamges for each tags)
