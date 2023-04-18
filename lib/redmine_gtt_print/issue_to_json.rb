@@ -79,7 +79,7 @@ module RedmineGttPrint
         "content_type",
         "description",
         "content_url",
-        "thumbnail_url",
+        # "thumbnail_url",
         "author_id",
         "author_name",
         "created_on"
@@ -102,7 +102,7 @@ module RedmineGttPrint
         attachment.content_type,
         attachment.description,
         download_named_attachment_url(attachment, attachment.filename, key: User.current.api_key),
-        attachment.thumbnailable? ? thumbnail_url(attachment) : nil,
+        # attachment.thumbnailable? ? thumbnail_url(attachment) : nil,
         attachment.author&.id,
         attachment.author&.name,
         attachment.created_on
