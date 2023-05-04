@@ -99,7 +99,7 @@ jobs:
             test:
               adapter: postgis
               database: redmine
-              host: postgres
+              host: localhost
               username: postgres
               password: postgres
               encoding: utf8
