@@ -1,0 +1,152 @@
+name: Test with PostGIS
+
+env:
+  PLUGIN_NAME: ${{ github.event.repository.name }}
+
+on:
+  push:
+    branches:
+      # - main
+      - 1.1-stable
+  pull_request:
+    branches:
+      # - main
+      - 1.1-stable
+
+jobs:
+  test:
+    name: redmine:${{ matrix.redmine_version }} ruby:${{ matrix.ruby_version }} postgis:${{ matrix.db_version }}
+    runs-on: ubuntu-22.04
+
+    container:
+      image: ruby:${{ matrix.ruby_version }}-bullseye
+
+    strategy:
+      fail-fast: false
+      matrix:
+        redmine_version: [4.2-stable]
+        gtt_version: [2.1-stable]
+        ruby_version: ['2.7']
+        db_version: [11-2.5, 15-3.3]
+
+    services:
+      postgres:
+        image: postgis/postgis:${{ matrix.db_version }}
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
+    steps:
+      - name: Checkout Redmine
+        uses: actions/checkout@v3
+        with:
+          repository: redmine/redmine
+          ref: ${{ matrix.redmine_version }}
+          path: redmine
+
+      - name: Checkout GTT Plugin
+        uses: actions/checkout@v3
+        with:
+          repository: gtt-project/redmine_gtt
+          ref: ${{ matrix.gtt_version }}
+          path: redmine/plugins/redmine_gtt
+
+      - name: Checkout Plugin
+        uses: actions/checkout@v3
+        with:
+          path: redmine/plugins/${{ env.PLUGIN_NAME }}
+
+      - name: Update package archives
+        run: apt-get update --yes --quiet
+
+      - name: Install package dependencies
+        run: >
+          apt-get install --yes --quiet
+          postgresql-client
+          gcc libpq-dev make patch libgeos-dev curl
+
+      # - name: Install Node/Yarn packages
+      #   run: |
+      #     curl -sL https://deb.nodesource.com/setup_16.x | bash -
+      #     curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
+      #     echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
+      #     apt-get update --yes --quiet
+      #     apt-get install --yes --quiet --no-install-recommends nodejs yarn
+
+      - name: Start MapFish Print
+        working-directory: redmine/plugins/redmine_gtt_print/server-example
+        run: docker compose up -d
+
+      # - name: Prepare Plugin
+      #   working-directory: redmine/plugins/redmine_gtt
+      #   run: |
+      #     yarn
+      #     npx webpack
+
+      - name: Prepare Redmine source
+        working-directory: redmine
+        run: |
+          cat <<EOF > config/database.yml
+            test:
+              adapter: postgis
+              database: redmine
+              host: postgres
+              username: postgres
+              password: postgres
+              encoding: utf8
+          EOF
+
+      - name: Adjust Gem environment
+        run: |
+          case "${{ matrix.redmine_version }}" in
+            4.2-stable)
+              echo "GEM_RGEO_ACTIVERECORD_VERSION=6.2.2" >> ${GITHUB_ENV}
+              echo "GEM_ACTIVERECORD_POSTGIS_ADAPTER_VERSION=5.2.3" >> ${GITHUB_ENV}
+              ;;
+            # master)
+            #   echo "GEM_PG_VERSION=1.4.5" >> ${GITHUB_ENV}
+            #   ;;
+          esac
+
+      - name: Install Ruby dependencies
+        working-directory: redmine
+        run: |
+          bundle config set --local without 'development'
+          bundle install --jobs=4 --retry=3
+
+      - name: Run Redmine rake tasks
+        env:
+          RAILS_ENV: test
+        working-directory: redmine
+        run: |
+          bundle exec rake generate_secret_token
+          bundle exec rake db:create db:migrate redmine:plugins:migrate
+
+      - name: Zeitwerk check
+        env:
+          RAILS_ENV: test
+        working-directory: redmine
+        run: |
+          if grep -q zeitwerk config/application.rb ; then
+            bundle exec rake zeitwerk:check
+          fi
+        shell: bash
+
+      - name: Run tests
+        env:
+          RAILS_ENV: test
+        working-directory: redmine
+        run: bundle exec rake redmine:plugins:test NAME=${{ env.PLUGIN_NAME }} RUBYOPT="-W0"
+
+      - name: Run uninstall test
+        env:
+          RAILS_ENV: test
+        working-directory: redmine
+        run: bundle exec rake redmine:plugins:migrate NAME=${{ env.PLUGIN_NAME }} VERSION=0
+
+      - name: Stop MapFish Print
+        working-directory: redmine/plugins/redmine_gtt_print/server-example
+        run: docker compose down
