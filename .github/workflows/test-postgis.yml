@@ -18,8 +18,8 @@ jobs:
     name: redmine:${{ matrix.redmine_version }} ruby:${{ matrix.ruby_version }} postgis:${{ matrix.db_version }}
     runs-on: ubuntu-22.04
 
-    container:
-      image: ruby:${{ matrix.ruby_version }}-bullseye
+    # container:
+    #   image: ruby:${{ matrix.ruby_version }}-bullseye
 
     strategy:
       fail-fast: false
@@ -58,6 +58,12 @@ jobs:
         uses: actions/checkout@v3
         with:
           path: redmine/plugins/${{ env.PLUGIN_NAME }}
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby_version }}
+          # bundler-cache: true # runs 'bundle install' and caches installed gems automatically
 
       - name: Update package archives
         run: apt-get update --yes --quiet
