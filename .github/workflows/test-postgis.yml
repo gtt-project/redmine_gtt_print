@@ -66,21 +66,21 @@ jobs:
           # bundler-cache: true # runs 'bundle install' and caches installed gems automatically
 
       - name: Update package archives
-        run: apt-get update --yes --quiet
+        run: sudo apt-get update --yes --quiet
 
       - name: Install package dependencies
-        run: >
-          apt-get install --yes --quiet
-          postgresql-client
-          gcc libpq-dev make patch libgeos-dev curl
+        run: |
+          sudo apt-get install --yes --quiet \
+            postgresql-client \
+            gcc libpq-dev make patch libgeos-dev curl
 
       # - name: Install Node/Yarn packages
       #   run: |
       #     curl -sL https://deb.nodesource.com/setup_16.x | bash -
       #     curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
       #     echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
-      #     apt-get update --yes --quiet
-      #     apt-get install --yes --quiet --no-install-recommends nodejs yarn
+      #     sudo apt-get update --yes --quiet
+      #     sudo apt-get install --yes --quiet --no-install-recommends nodejs yarn
 
       - name: Start MapFish Print
         working-directory: redmine/plugins/redmine_gtt_print/server-example
