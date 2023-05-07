@@ -1,6 +1,6 @@
 # Redmine GTT Print Plugin
 
-![CI #develop](https://github.com/gtt-project/redmine_gtt_print/workflows/Test%20with%20Redmine/badge.svg)
+![CI #develop](https://github.com/gtt-project/redmine_gtt_print/workflows/Test%20with%20PostGIS/badge.svg)
 
 The Geo-Task-Tracker (GTT) print plugin adds printing support issues:
 
