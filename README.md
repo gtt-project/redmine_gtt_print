@@ -14,8 +14,8 @@ The Geo-Task-Tracker (GTT) print plugin adds printing support issues:
 Redmine GTT Print **requires PostgreSQL/PostGIS** and will not work with SQLite or MariaDB/MySQL!!!
 It also requires an installation of [Mapfish Print](https://github.com/mapfish/mapfish-print) .
 
-- Redmine >= 4.0.0
-- Mapfish Print >= 3.0.0
+- Redmine >= 4.2.0
+- Mapfish Print >= 3.22.0
 - [redmine_gtt](https://github.com/gtt-project/redmine_gtt/) plugin
 
 ## Installation

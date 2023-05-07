@@ -12,7 +12,7 @@ Redmine::Plugin.register :redmine_gtt_print do
   description 'Adds advanced printing capabilities for GTT reports'
   version '1.1.0'
 
-  requires_redmine version_or_higher: '4.0.0'
+  requires_redmine version_or_higher: '4.2.0'
 
   settings(
     default: {
