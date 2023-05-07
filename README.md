@@ -4,7 +4,7 @@
 
 The Geo-Task-Tracker (GTT) print plugin adds printing support issues:
 
-- Supports [Mapfish Print](https://github.com/mapfish/mapfish-print) 
+- Supports [Mapfish Print](https://github.com/mapfish/mapfish-print)
 - Complex print layouts with Jasper Reports
 - Prints map layers and images (issue attachments)
 - and more ...
@@ -15,7 +15,7 @@ Redmine GTT Print **requires PostgreSQL/PostGIS** and will not work with SQLite 
 It also requires an installation of [Mapfish Print](https://github.com/mapfish/mapfish-print) .
 
 - Redmine >= 4.2.0
-- Mapfish Print >= 3.22.0
+- Mapfish Print >= 3.28.0
 - [redmine_gtt](https://github.com/gtt-project/redmine_gtt/) plugin
 
 ## Installation
