@@ -44,6 +44,12 @@ module RedmineGttPrint
       if data = @issue.geodata_for_print
         json[:attributes][:map] = self.class.map_data(data[:center], [data[:geojson]],
           scale, basemap_url)
+      else
+        project = Project.find(@issue.project_id)
+        if data = project.geodata_for_print
+          json[:attributes][:map] = self.class.map_data(data[:center], [],
+            scale, basemap_url)
+        end
       end
 
       context = {
