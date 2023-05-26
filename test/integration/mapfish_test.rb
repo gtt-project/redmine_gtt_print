@@ -8,6 +8,7 @@ class MapfishTest < ActionDispatch::IntegrationTest
            :projects_trackers,
            :enabled_modules,
            :issue_statuses,
+           :issue_categories,
            :issues,
            :enumerations
 

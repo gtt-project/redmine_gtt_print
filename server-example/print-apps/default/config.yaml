@@ -42,6 +42,8 @@ templates:
         default: ""
       is_private: !string
         default: ""
+      is_public: !string
+        default: ""
       start_date: !string
         default: ""
       done_date: !string
@@ -52,10 +54,15 @@ templates:
         default: ""
       updated_on: !string
         default: ""
-      custom_text: !string
-        default: ""
       last_notes: !string
         default: ""
+      all_notes: !string
+        default: ""
+      custom_text: !string
+        default: ""
+      datasource: !datasource
+        attributes:
+          table: !table {}
       image_url_1: !string
         default: "../default/blank.png"
       image_url_2: !string
@@ -74,3 +81,9 @@ templates:
     - !forwardHeaders
       headers: [Referer, User-Agent]
     - !createMap {}
+    - !createDataSource
+      reportTemplate: attachments.jrxml
+      reportKey: reportTemplate
+      processors:
+         - !prepareTable {}
+    tableData: jrDataSource

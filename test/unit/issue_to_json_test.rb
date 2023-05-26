@@ -8,6 +8,7 @@ class IssueToJsonTest < ActiveSupport::TestCase
            :projects_trackers,
            :enabled_modules,
            :issue_statuses,
+           :issue_categories,
            :issues,
            :enumerations,
            :custom_fields,
@@ -19,7 +20,7 @@ class IssueToJsonTest < ActiveSupport::TestCase
 
   setup do
     @issue = Issue.find 1
-    @issue.update_attributes geojson: test_geojson,
+    @issue.update! geojson: test_geojson,
       custom_field_values: { '1' => 'MySQL' }
   end
 
@@ -37,7 +38,8 @@ class IssueToJsonTest < ActiveSupport::TestCase
     assert_equal 'Feature', feature['type']
     assert geom = feature['geometry']
     assert_equal 'Polygon', geom['type']
-    assert_equal 15052703.278285623, geom['coordinates'].flatten.first
+    # round(1) for PostGIS 2.5 ST_AsGeoJSON - maxdecimaldigits argument issue
+    assert_equal 15052703.278285623.round(1), geom['coordinates'].flatten.first.round(1)
   end
 
   test "should call hook" do
@@ -51,14 +53,15 @@ class IssueToJsonTest < ActiveSupport::TestCase
     assert j = RedmineGttPrint::IssueToJson.(i, 'layout')
     assert h = JSON.parse(j)
     assert_equal i.subject, h['attributes']['subject']
+    attachments = h['attributes']['datasource'][0]
+    assert_equal 'attachments', attachments['title']
     if !Redmine::Plugin.installed?(:redmine_attachment_categories)
       assert h['attributes']['image_url_1'].present?
+      assert attachments['table']['columns'].include?('content_url')
     else
       assert h['attributes']['other_image_url_1'].present?
+      assert attachments['table']['columns'].include?('attachment_category_name')
     end
     assert_nil h['attributes']['map']
   end
-
-
 end
-

@@ -10,6 +10,7 @@ class IssuePrintTest < Redmine::IntegrationTest
            :projects_trackers,
            :enabled_modules,
            :issue_statuses,
+           :issue_categories,
            :issues,
            :enumerations,
            :custom_fields,
