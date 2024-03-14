@@ -66,7 +66,8 @@ module RedmineGttPrint
         title: "attachments",
         table: {
           columns: attachment_columns,
-          data: attachments.map {|a| attachment_to_data_row a}
+          data: attachments.where("filename ~* ?", '\.(jpg|jpeg|png|bmp|gif)$')
+                  .map {|a| attachment_to_data_row a}
         }
       }
     end
