@@ -22,8 +22,12 @@
 var GttPrint = {
   // Constants Definition
   consts: {
-    LAST_LEDGER_KEY: "last_ledger",
-    LAST_LEDGER_SELECTER: '#gtt_print_job_layout'
+    LAST_LAYOUT_KEY: (function () {
+      // Use immediate function to switch keys between list and detail
+      var isListPage = location.href.endsWith('/issues');
+      return isListPage ? "GTT_PRINT_LAST_LAYOUT_FOR_LIST" : "GTT_PRINT_LAST_LAYOUT_FOR_DETAIL";
+    }()),
+    LAST_LAYOUT_SELECTOR: '#gtt_print_job_layout'
   },
   // Initializer
   init: function () {
@@ -31,28 +35,31 @@ var GttPrint = {
 
     // register event handlers
     var handlers = GttPrint.handlers;
-    $(consts.LAST_LEDGER_SELECTER).on('change', handlers.onLedgerChange);
+    $(consts.LAST_LAYOUT_SELECTOR).on('change', handlers.onLayoutChange);
 
     // initialize at once
     var initializers = GttPrint.initializers;
-    initializers.restoreLedger();
+    initializers.restoreLayout();
+
+    // output module initialization completion message
+    console.info(`GttPrint was initialized.  This module set last selected layout to local storage via KEY: "${consts.LAST_LAYOUT_KEY}".`);
   },
   // methods for initialization
   initializers: {
-    restoreLedger: function () {
+    restoreLayout: function () {
       var consts = GttPrint.consts;
-      var lastLedger = localStorage.getItem(consts.LAST_LEDGER_KEY, '');
-      if (lastLedger) {
-        $(consts.LAST_LEDGER_SELECTER).val(lastLedger);
+      var lastLayout = localStorage.getItem(consts.LAST_LAYOUT_KEY, '');
+      if (lastLayout) {
+        $(consts.LAST_LAYOUT_SELECTOR).val(lastLayout);
       }
     }
   },
   // methods for event handlers
   handlers: {
-    onLedgerChange: function (ev) {
+    onLayoutChange: function (ev) {
       var consts = GttPrint.consts;
-      var lastLedger = $(ev.currentTarget).val();
-      localStorage.setItem(consts.LAST_LEDGER_KEY, lastLedger);
+      var lastLayout = $(ev.currentTarget).val();
+      localStorage.setItem(consts.LAST_LAYOUT_KEY, lastLayout);
     }
   },
   downloadWhenReady: function(startTime, path) {
