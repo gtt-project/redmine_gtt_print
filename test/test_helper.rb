@@ -19,11 +19,17 @@ class TestMapfish
     ['A4 portrait']
   end
 
-  Result = ImmutableStruct.new(:success?, :ref)
+  CreateJobResult = ImmutableStruct.new(:success?, :ref)
+  PrintResult = ImmutableStruct.new(:pdf, :error)
 
-  def initialize
+  def initialize(is_sync = false)
     @ready_jobs = []
     @jobs = []
+    @is_sync = is_sync
+  end
+
+  def is_sync?
+    @is_sync
   end
 
   def printjob(name)
@@ -38,7 +44,11 @@ class TestMapfish
     @issue = job.issue
     @layout = job.layout
 
-    Result.new(success: true, ref: 'some-job')
+    if !@is_sync
+      CreateJobResult.new(success: true, ref: 'some-job')
+    else
+      PrintResult.new(pdf: 'some-blob', error: nil)
+    end
   end
 
   def get_status(ref)

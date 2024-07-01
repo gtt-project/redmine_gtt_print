@@ -26,6 +26,7 @@ class IssuePrintTest < Redmine::IntegrationTest
     @issue = @project.issues.first
     EnabledModule.create! project: @project, name: 'gtt_print'
 
+    Setting.plugin_redmine_gtt_print['enable_sync_printing'] = false
     @mapfish = TestMapfish.new
     RedmineGttPrint.stubs(:mapfish).returns @mapfish
   end
@@ -47,6 +48,31 @@ class IssuePrintTest < Redmine::IntegrationTest
     post "/gtt_print_jobs", xhr: true, params: { issue_id: @issue.id,
                                     gtt_print_job: { layout: "A4 portrait" } }
     assert_response :created
+
+    assert_equal @issue, @mapfish.issue
+    assert_equal 'A4 portrait', @mapfish.layout
+  end
+
+  def test_should_create_print_job_sync
+    Setting.plugin_redmine_gtt_print['enable_sync_printing'] = true
+    @mapfish = TestMapfish.new(:is_sync => true)
+    RedmineGttPrint.stubs(:mapfish).returns @mapfish
+
+    get "/issues/#{@issue.id}"
+    assert_response :success
+    assert_select '#gtt_print_job_layout option', text: "A4 portrait", count: 0
+
+    log_user 'jsmith', 'jsmith'
+    get '/projects/ecookbook/issues/new'
+    assert_response :success
+
+    get "/issues/#{@issue.id}"
+    assert_response :success
+    assert_select '#gtt_print_job_layout option', text: "A4 portrait"
+
+    post "/gtt_print_jobs", params: { issue_id: @issue.id,
+                                    gtt_print_job: { layout: "A4 portrait" } }
+    assert_response :success
 
     assert_equal @issue, @mapfish.issue
     assert_equal 'A4 portrait', @mapfish.layout

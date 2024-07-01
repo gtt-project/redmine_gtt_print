@@ -6,9 +6,14 @@ module RedmineGttPrint
     CreateJobResult = ImmutableStruct.new(:success?, :ref)
     PrintResult = ImmutableStruct.new(:pdf, :error)
 
-    def initialize(host:, timeout: nil)
+    def initialize(host:, timeout: nil, is_sync: false)
       @host = host
       @timeout = timeout
+      @is_sync = is_sync
+    end
+
+    def is_sync?
+      @is_sync
     end
 
     def print_configs
@@ -44,15 +49,24 @@ module RedmineGttPrint
     end
 
     def print(job, referer = nil, user_agent = nil)
-      if ref = request_print(job.json, job.layout, job.format, referer, user_agent)
-        CreateJobResult.new success: true, ref: ref
+      if !is_sync?
+        if ref = request_print(job.json, job.layout, job.format, referer, user_agent)
+          CreateJobResult.new success: true, ref: ref
+        else
+          CreateJobResult.new
+        end
       else
-        CreateJobResult.new
+        request_print(job.json, job.layout, job.format, referer, user_agent)
       end
     end
 
     # {"done"=>true, "status"=>"finished", "elapsedTime"=>6588, "waitingTime"=>0, "downloadURL"=>"/mapfish/print/report/a790a8e0-d2b9-4f27-8a83-d58a70b66568@36419944-3e1d-4b17-9aab-f56aec338242"}
     def get_status(ref)
+      if is_sync?
+        error_msg = "get_status is not supported in sync mode"
+        Rails.logger.error error_msg
+        return PrintResult.new error: error_msg
+      end
       r = HTTParty.get "#{@host}/print/status/#{ref}.json", timeout: @timeout
       if r.success?
         json = JSON.parse r.body
@@ -63,6 +77,11 @@ module RedmineGttPrint
     end
 
     def get_print(ref)
+      if is_sync?
+        error_msg = "get_print is not supported in sync mode"
+        Rails.logger.error error_msg
+        return PrintResult.new error: error_msg
+      end
       url = "#{@host}/print/report/#{ref}"
       r = HTTParty.get url, timeout: @timeout
       if r.success?
@@ -76,8 +95,6 @@ module RedmineGttPrint
     private
 
     def request_print(json, layout, format, referer = nil, user_agent = nil)
-      str = URI.encode_www_form_component(layout)
-      url = "#{@host}/print/#{str}/report.#{format}"
       if Rails.env.development?
         (File.open(Rails.root.join("tmp/mapfish.json"), "wb") << json).close
       end
@@ -90,13 +107,26 @@ module RedmineGttPrint
       if !user_agent.nil?
         headers['User-Agent'] = user_agent
       end
-      r = HTTParty.post url, body: json, headers: headers, timeout: @timeout
-      if r.success?
-        json = JSON.parse r.body
-        json['ref']
+      str = URI.encode_www_form_component(layout)
+      if !is_sync?
+        url = "#{@host}/print/#{str}/report.#{format}"
+        r = HTTParty.post url, body: json, headers: headers, timeout: @timeout
+        if r.success?
+          json = JSON.parse r.body
+          json['ref']
+        else
+          Rails.logger.error "failed to request print at #{url}: #{r.code}\n#{r.body}"
+          false
+        end
       else
-        Rails.logger.error "failed to request print at #{url}: #{r.code}\n#{r.body}"
-        false
+        url = "#{@host}/print/#{str}/buildreport.#{format}"
+        r = HTTParty.post url, body: json, headers: headers #, timeout: @timeout
+        if r.success?
+          PrintResult.new pdf: r.body
+        else
+          Rails.logger.error "failed to fetch print result from #{url} : #{r.code}\n#{r.body}"
+          PrintResult.new error: r.body
+        end
       end
     end
 

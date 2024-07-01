@@ -13,3 +13,4 @@ ja:
   button_gtt_print_submit: 印刷
   permission_view_gtt_print: "フォーム印刷の閲覧"
   project_module_gtt_print: "GTTフォーム印刷"
+  label_enable_sync_printing: 同期印刷を有効にする
