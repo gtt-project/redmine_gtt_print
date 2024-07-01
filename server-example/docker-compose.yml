@@ -1,8 +1,7 @@
-version: '3.4'
-
 services:
   mapfish-print:
-    image: camptocamp/mapfish_print:3.28
+    image: camptocamp/mapfish_print:3.30
+    platform: linux/amd64
     ports:
       - 8080:8080
     environment:
