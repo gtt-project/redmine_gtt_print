@@ -41,21 +41,21 @@ jobs:
 
     steps:
       - name: Checkout Redmine
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: redmine/redmine
           ref: ${{ matrix.redmine_version }}
           path: redmine
 
       - name: Checkout GTT Plugin
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: gtt-project/redmine_gtt
           ref: ${{ matrix.gtt_version }}
           path: redmine/plugins/redmine_gtt
 
       - name: Checkout Plugin
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           path: redmine/plugins/${{ env.PLUGIN_NAME }}
 
