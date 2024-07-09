@@ -37,10 +37,14 @@ module RedmineGttPrint
       }
 
       scale = nil
+      default_map_fit_maxzoom_level = Setting.plugin_redmine_gtt['default_map_fit_maxzoom_level']
+      if default_map_fit_maxzoom_level.present? && default_map_fit_maxzoom_level.to_i > 0
+        scale = 559081145.8641895 / 2 ** default_map_fit_maxzoom_level.to_i
+      end
       basemap_url = nil
-      if !@other_attributes.nil?
-        scale = @other_attributes[:scale]
-        basemap_url = @other_attributes[:basemap_url]
+      project_tile_sources = @issue.project.gtt_tile_sources
+      if project_tile_sources.present?
+        basemap_url = project_tile_sources.first.options['url']
       end
       if data = @issue.geodata_for_print
         json[:attributes][:map] = self.class.map_data(data[:center], [data[:geojson]],
