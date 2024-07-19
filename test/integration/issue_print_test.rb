@@ -27,7 +27,7 @@ class IssuePrintTest < Redmine::IntegrationTest
     EnabledModule.create! project: @project, name: 'gtt_print'
 
     Setting.plugin_redmine_gtt_print['enable_sync_printing'] = false
-    @mapfish = TestMapfish.new
+    @mapfish = TestMapfishAsync.new
     RedmineGttPrint.stubs(:mapfish).returns @mapfish
   end
 
@@ -54,8 +54,8 @@ class IssuePrintTest < Redmine::IntegrationTest
   end
 
   def test_should_create_print_job_sync
-    Setting.plugin_redmine_gtt_print['enable_sync_printing'] = true
-    @mapfish = TestMapfish.new(:is_sync => true)
+    Setting.plugin_redmine_gtt_print['enable_sync_printing'] = 'true'
+    @mapfish = TestMapfishSync.new
     RedmineGttPrint.stubs(:mapfish).returns @mapfish
 
     get "/issues/#{@issue.id}"

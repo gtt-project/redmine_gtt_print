@@ -19,17 +19,9 @@ class TestMapfish
     ['A4 portrait']
   end
 
-  CreateJobResult = ImmutableStruct.new(:success?, :ref)
-  PrintResult = ImmutableStruct.new(:pdf, :error)
-
-  def initialize(is_sync = false)
+  def initialize()
     @ready_jobs = []
     @jobs = []
-    @is_sync = is_sync
-  end
-
-  def is_sync?
-    @is_sync
   end
 
   def printjob(name)
@@ -41,14 +33,23 @@ class TestMapfish
   end
 
   def print(job, referer = nil, user_agent = nil)
+    raise NotImplementedError
+  end
+
+  def get_status(ref)
+    raise NotImplementedError
+  end
+end
+
+class TestMapfishAsync < TestMapfish
+  CreateJobResult = ImmutableStruct.new(:success?, :ref)
+  PrintResult = ImmutableStruct.new(:pdf, :error)
+
+  def print(job, referer = nil, user_agent = nil)
     @issue = job.issue
     @layout = job.layout
 
-    if !@is_sync
-      CreateJobResult.new(success: true, ref: 'some-job')
-    else
-      PrintResult.new(pdf: 'some-blob', error: nil)
-    end
+    CreateJobResult.new(success: true, ref: 'some-job')
   end
 
   def get_status(ref)
@@ -62,3 +63,20 @@ class TestMapfish
   end
 end
 
+class TestMapfishSync < TestMapfish
+  CreateJobResult = ImmutableStruct.new(:success?, :ref)
+  PrintResult = ImmutableStruct.new(:pdf, :error)
+
+  def print(job, referer = nil, user_agent = nil)
+    @issue = job.issue
+    @layout = job.layout
+
+    PrintResult.new(pdf: 'some-blob', error: nil)
+  end
+
+  def get_status(ref)
+    error_msg = "get_status is not supported in sync mode"
+    Rails.logger.error error_msg
+    return PrintResult.new error: error_msg
+  end
+end
