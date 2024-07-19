@@ -13,12 +13,13 @@ class GttPrintJobsController < ApplicationController
     job = GttPrintJob.new gtt_print_job_params
     job.issue = @issue
     job.issues = @issues
+    @is_sync = RedmineGttPrint.is_sync?
     if job.valid?
-      if !RedmineGttPrint.mapfish.is_sync?
-        @result = RedmineGttPrint.mapfish.print job, request.referer, request.user_agent
+      r = RedmineGttPrint.mapfish.print job, request.referer, request.user_agent
+      if !@is_sync
+        @result = r
         render status: (@result&.success? ? :created : 422)
       else
-        r = RedmineGttPrint.mapfish.print job, request.referer, request.user_agent
         if pdf = r.pdf
           send_data pdf, filename: "report.pdf", type: 'application/pdf'
         else

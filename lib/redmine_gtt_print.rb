@@ -24,17 +24,27 @@ module RedmineGttPrint
     (settings['tracker_config'] || {})[tracker.id.to_s]
   end
 
+  def self.is_sync?
+    settings['enable_sync_printing'] == 'true'
+  end
+
   def self.layouts_for_tracker(tracker)
     mapfish.layouts tracker_config tracker
   end
 
   def self.mapfish
     RequestStore.store[:mapfish] ||=
-      RedmineGttPrint::Mapfish.new(
-        host: settings['default_print_server'],
-        timeout: settings['default_print_server_timeout'],
-        is_sync: settings['enable_sync_printing']
-      )
+      if !is_sync?
+        RedmineGttPrint::MapfishAsync.new(
+          host: settings['default_print_server'],
+          timeout: settings['default_print_server_timeout']
+        )
+      else
+        RedmineGttPrint::MapfishSync.new(
+          host: settings['default_print_server'],
+          timeout: settings['default_print_server_timeout']
+        )
+      end
   end
 
 
