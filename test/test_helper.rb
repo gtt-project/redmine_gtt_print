@@ -43,7 +43,6 @@ end
 
 class TestMapfishAsync < TestMapfish
   CreateJobResult = ImmutableStruct.new(:success?, :ref)
-  PrintResult = ImmutableStruct.new(:pdf, :error)
 
   def print(job, referer = nil, user_agent = nil)
     @issue = job.issue
@@ -64,7 +63,6 @@ class TestMapfishAsync < TestMapfish
 end
 
 class TestMapfishSync < TestMapfish
-  CreateJobResult = ImmutableStruct.new(:success?, :ref)
   PrintResult = ImmutableStruct.new(:pdf, :error)
 
   def print(job, referer = nil, user_agent = nil)
