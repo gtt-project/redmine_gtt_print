@@ -13,9 +13,19 @@ class GttPrintJobsController < ApplicationController
     job = GttPrintJob.new gtt_print_job_params
     job.issue = @issue
     job.issues = @issues
+    @is_sync = RedmineGttPrint.is_sync?
     if job.valid?
-      @result = RedmineGttPrint.mapfish.print job, request.referer, request.user_agent
-      render status: (@result&.success? ? :created : 422)
+      r = RedmineGttPrint.mapfish.print job, request.referer, request.user_agent
+      if !@is_sync
+        @result = r
+        render status: (@result&.success? ? :created : 422)
+      else
+        if pdf = r.pdf
+          send_data pdf, filename: "report.pdf", type: 'application/pdf'
+        else
+          render text: r.error, status: 500
+        end
+      end
     else
       render status: 422
     end
@@ -45,7 +55,7 @@ class GttPrintJobsController < ApplicationController
   private
 
   def gtt_print_job_params
-    params[:gtt_print_job].permit(:layout, :custom_text, :scale, :basemap_url)
+    params[:gtt_print_job].permit(:layout, :custom_text)
   end
 
   def authorize_create

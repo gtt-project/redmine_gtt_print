@@ -13,3 +13,4 @@ en:
   button_gtt_print_submit: Print
   permission_view_gtt_smash: "View GTT print"
   project_module_gtt_smash: "GTT print"
+  label_enable_sync_printing: Enable sync printing

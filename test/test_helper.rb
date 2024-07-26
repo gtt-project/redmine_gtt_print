@@ -19,9 +19,7 @@ class TestMapfish
     ['A4 portrait']
   end
 
-  Result = ImmutableStruct.new(:success?, :ref)
-
-  def initialize
+  def initialize()
     @ready_jobs = []
     @jobs = []
   end
@@ -35,10 +33,22 @@ class TestMapfish
   end
 
   def print(job, referer = nil, user_agent = nil)
+    raise NotImplementedError
+  end
+
+  def get_status(ref)
+    raise NotImplementedError
+  end
+end
+
+class TestMapfishAsync < TestMapfish
+  CreateJobResult = ImmutableStruct.new(:success?, :ref)
+
+  def print(job, referer = nil, user_agent = nil)
     @issue = job.issue
     @layout = job.layout
 
-    Result.new(success: true, ref: 'some-job')
+    CreateJobResult.new(success: true, ref: 'some-job')
   end
 
   def get_status(ref)
@@ -52,3 +62,19 @@ class TestMapfish
   end
 end
 
+class TestMapfishSync < TestMapfish
+  PrintResult = ImmutableStruct.new(:pdf, :error)
+
+  def print(job, referer = nil, user_agent = nil)
+    @issue = job.issue
+    @layout = job.layout
+
+    PrintResult.new(pdf: 'some-blob', error: nil)
+  end
+
+  def get_status(ref)
+    error_msg = "get_status is not supported in sync mode"
+    Rails.logger.error error_msg
+    return PrintResult.new error: error_msg
+  end
+end
