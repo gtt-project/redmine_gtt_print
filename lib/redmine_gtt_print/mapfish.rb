@@ -53,6 +53,19 @@ module RedmineGttPrint
 
     private
 
+    def prepare_headers_and_encoded_layout(json, layout, referer, user_agent)
+      if Rails.env.development?
+        (File.open(Rails.root.join("tmp/mapfish.json"), "wb") << json).close
+      end
+      headers = {
+        'Content-Type' => 'application/json'
+      }
+      headers['Referer'] = referer if referer.present?
+      headers['User-Agent'] = user_agent if user_agent.present?
+      encoded_layout = URI.encode_www_form_component(layout)
+      return headers, encoded_layout
+    end
+
     def request_print(json, layout, format, referer = nil, user_agent = nil)
       raise NotImplementedError
     end

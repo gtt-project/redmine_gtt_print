@@ -24,20 +24,8 @@ module RedmineGttPrint
     private
 
     def request_print(json, layout, format, referer = nil, user_agent = nil)
-      if Rails.env.development?
-        (File.open(Rails.root.join("tmp/mapfish.json"), "wb") << json).close
-      end
-      headers = {
-        'Content-Type' => 'application/json'
-      }
-      if !referer.nil?
-        headers['Referer'] = referer
-      end
-      if !user_agent.nil?
-        headers['User-Agent'] = user_agent
-      end
-      str = URI.encode_www_form_component(layout)
-      url = "#{@host}/print/#{str}/buildreport.#{format}"
+      headers, encoded_layout = prepare_headers_and_encoded_layout(json, layout, referer, user_agent)
+      url = "#{@host}/print/#{encoded_layout}/buildreport.#{format}"
       r = HTTParty.post url, body: json, headers: headers #, timeout: @timeout
       if r.success?
         PrintResult.new pdf: r.body
