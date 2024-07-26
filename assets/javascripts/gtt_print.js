@@ -1,18 +1,18 @@
 /**
  * GttPrint
- * 
+ *
  * en:
  * This script describes the JavaScript portion of the GTT Print plug-in.
- * 
+ *
  * ## Design policy.
  * * Use the namespace `GttPrint` to avoid `Global Pollution`.
  * * Define methods for constants in `consts` objects, event handlers in `handlers` objects, and initialization processes in `initializers` objects.
  * * To avoid the complexity caused by implicit this-reference conversion, the methods in the `consts` `handlers` `initializers` objects are referenced from the `GttPrint` namespace and assigned to local variables at the beginning of each method.
  * * The initialization process is performed by calling `GttPrint.init()` in `$(document).ready`. This ensures that the initialization process is executed after the DOM has been rendered.
- * 
+ *
  * ja:
  * このスクリプトは、GTT PrintプラグインのJavaScript部分を記述します。
- * 
+ *
  * ## 設計方針
  * * グローバル汚染を回避するため、名前空間 `GttPrint` を使用します。
  * * 定数は `consts`オブジェクトに、イベントハンドラは `handlers` オブジェクトに、初期化処理は `initializers` オブジェクトに、それぞれメソッドを定義します。
@@ -78,12 +78,6 @@ var GttPrint = {
     }, 500);
   }
 };
-
-var _submit = function () {
-  $('input[name="gtt_print_job[scale]"]').val(App.getScale());
-  $('input[name="gtt_print_job[basemap_url]"]').val(App.getBasemapUrl());
-}
-
 
 $(document).ready(function () {
   GttPrint.init();

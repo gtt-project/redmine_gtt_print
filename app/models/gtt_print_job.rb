@@ -3,7 +3,7 @@
 class GttPrintJob
   include ActiveModel::Model
 
-  attr_accessor :layout, :custom_text, :issue, :issues, :scale, :basemap_url
+  attr_accessor :layout, :custom_text, :issue, :issues
 
   validates :layout, presence: true
   validates :issue, presence: true,  if: ->{ issues.nil? }
@@ -17,8 +17,7 @@ class GttPrintJob
     if list?
       RedmineGttPrint::IssuesToJson.(issues, layout, custom_text: custom_text)
     else
-      RedmineGttPrint::IssueToJson.(issue, layout, { custom_text: custom_text,
-        scale: scale, basemap_url: basemap_url })
+      RedmineGttPrint::IssueToJson.(issue, layout, custom_text: custom_text)
     end
   end
 
