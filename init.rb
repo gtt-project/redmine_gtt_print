@@ -27,6 +27,7 @@ Redmine::Plugin.register :redmine_gtt_print do
       "tracker_config" => {},
       "issue_list_config" => nil,
       "default_print_server_timeout" => "5",
+      "enable_sync_printing" => false,
     },
     partial: 'gtt_print/settings'
   )

@@ -8,6 +8,10 @@
   <%= content_tag(:label, l(:field_gtt_print_default_server_timeout)) %>
   <%= text_field_tag 'settings[default_print_server_timeout]', @settings['default_print_server_timeout'], :size => 10 %>
 </p>
+<p>
+  <%= content_tag(:label, l(:label_enable_sync_printing)) %>
+  <%= check_box_tag 'settings[enable_sync_printing]', true, @settings[:enable_sync_printing] %>
+</p>
 </div>
 
 <% if Redmine::Plugin.installed?(:redmine_attachment_categories) %>

@@ -14,7 +14,7 @@ class MapfishTest < ActionDispatch::IntegrationTest
 
   setup do
     @issue = Issue.find 1
-    @mapfish = RedmineGttPrint::Mapfish.new host: "http://localhost:8080"
+    @mapfish = RedmineGttPrint::MapfishAsync.new host: "http://localhost:8080"
     Setting.plugin_redmine_gtt_print = {'tracker_config' => { @issue.tracker.id.to_s => 'default' }}
   end
 
