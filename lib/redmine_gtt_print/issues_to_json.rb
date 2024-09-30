@@ -60,9 +60,9 @@ module RedmineGttPrint
       columns = [
         i.id.to_s,
         i.status.name,
-        i.start_date,
+        i.start_date || "",
         i.created_on,
-        i.assigned_to&.name,
+        i.assigned_to&.name || "",
         i.subject,
         i.description
       ]
