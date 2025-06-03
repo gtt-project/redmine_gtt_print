@@ -1,1 +1,10 @@
-{}
+field_gtt_print_server: Standard-URL för utskriftsserver
+field_gtt_print_default_server_timeout: Standardtidsgräns för skrivarserver
+gtt_print_configurations: Konfigurationer för utskrift
+label_gtt_list_config: Listor med frågor
+label_gtt_no_printing: Ingen utskrift
+label_gtt_print_title: Mall för utskrift
+label_gtt_print_failed: Utskriften misslyckades
+button_gtt_print_submit: Skriv ut
+permission_view_gtt_smash: Visa GTT-utskrift
+project_module_gtt_smash: GTT-utskrift
